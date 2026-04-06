@@ -1,17 +1,10 @@
 import { useState, useRef } from 'react';
-import UniverSpreadsheetOptimized from './components/UniverSpreadsheetOptimized';
+import UniverSpreadsheetOptimized, { UniverSpreadsheetRef } from './components/UniverSpreadsheetOptimized';
 import TopNavigation from './components/TopNavigation';
 import TaskHint from './components/TaskHint';
 import ValidationFeedback from './components/ValidationFeedback';
 import './styles/top-navigation.css';
 import './styles/app.css';
-
-interface UniverSpreadsheetRef {
-  getCellValue: (cell: string) => any;
-  getTargetCellsValues: (cells: string[]) => Record<string, any>;
-  getCellFormula: (cell: string) => string;
-  getTargetCellsFormulas: (cells: string[]) => Record<string, string>;
-}
 
 interface PracticeRecord {
   taskId: string;
