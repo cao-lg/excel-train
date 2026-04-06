@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as api from '../services/api';
 
 interface UserProgress {
@@ -17,6 +17,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
   const [showSkillBook, setShowSkillBook] = useState<boolean>(false);
   const [showTasks, setShowTasks] = useState<boolean>(false);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // 任务列表（实际项目中可以从API获取）
   const taskList = [
@@ -73,8 +75,16 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
   };
 
   const handleSkillSelect = (skill: string) => {
-    setSelectedSkill(skill === selectedSkill ? null : skill);
-    setShowTasks(skill === selectedSkill ? false : true);
+    const newSelectedSkill = skill === selectedSkill ? null : skill;
+    setSelectedSkill(newSelectedSkill);
+    setShowTasks(newSelectedSkill !== null);
+    
+    if (newSelectedSkill && menuRefs.current[newSelectedSkill]) {
+      const rect = menuRefs.current[newSelectedSkill]?.getBoundingClientRect();
+      if (rect) {
+        setMenuPosition({ top: rect.bottom + 4, left: rect.left });
+      }
+    }
   };
 
   return (
@@ -94,7 +104,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
         {skills.map(skill => (
           <div 
             key={skill} 
-            className="menu-item skill-item"
+            className="menu-item"
+            ref={el => menuRefs.current[skill] = el}
           >
             <button 
               className="menu-button"
@@ -102,28 +113,38 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
             >
               {skill}
             </button>
-            {selectedSkill === skill && showTasks && (
-              <div className="sub-menu task-sub-menu">
-                {taskList
-                  .filter(task => task.skillPoint === skill)
-                  .map(task => (
-                    <div 
-                      key={task.id} 
-                      className="task-item"
-                      onClick={() => handleTaskSelect(task.id)}
-                    >
-                      <span className="task-title">{task.title}</span>
-                      <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : 'advanced'}`}>
-                        {task.level}
-                      </span>
-                    </div>
-                  ))
-                }
-              </div>
-            )}
           </div>
         ))}
       </div>
+      
+      {/* 全局下拉菜单 */}
+      {selectedSkill && showTasks && (
+        <div 
+          className="sub-menu task-sub-menu"
+          style={{ 
+            position: 'fixed',
+            top: menuPosition.top,
+            left: menuPosition.left,
+            margin: 0
+          }}
+        >
+          {taskList
+            .filter(task => task.skillPoint === selectedSkill)
+            .map(task => (
+              <div 
+                key={task.id} 
+                className="task-item"
+                onClick={() => handleTaskSelect(task.id)}
+              >
+                <span className="task-title">{task.title}</span>
+                <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : 'advanced'}`}>
+                  {task.level}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+      )}
     </div>
   );
 };

@@ -1,22 +1,33 @@
+/* --------------------------
+   顶部导航 · 办公清爽简约版
+   修复：二级菜单被遮挡 / 颜色太深 / 排版浪费
+--------------------------- */
 .top-navigation {
-  background-color: #2c3e50;
-  color: white;
-  padding: 10px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f7f8fa; /* 办公浅灰白，超级舒服 */
+  color: #333;
+  padding: 6px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   z-index: 1000;
+  position: relative;
 }
 
+/* 标题 + 用户信息 只占一行！不浪费空间 */
 .nav-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .nav-header h1 {
-  font-size: 20px;
+  font-size: 15px;
   margin: 0;
-  color: #3498db;
+  color: #2d5c9b; /* 办公蓝 */
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .user-status {
@@ -26,182 +37,162 @@
 
 .status-info {
   display: flex;
-  gap: 15px;
-  font-size: 14px;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .status-info .level {
-  background-color: #3498db;
+  background-color: #e6f0ff;
+  color: #2d5c9b;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-weight: 500;
 }
 
 .status-info .experience {
-  background-color: #27ae60;
+  background-color: #f0f9f4;
+  color: #2e7d32;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-weight: 500;
 }
 
+/* --------------------------
+   菜单区域：一行显示 + 不遮挡二级菜单
+--------------------------- */
 .nav-menu {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  max-width: 100%;
+  gap: 6px;
   overflow-x: auto;
-  padding: 5px 0;
+  white-space: nowrap;
+  padding-bottom: 2px;
+  align-items: center;
+  position: static;
+  z-index: auto;
 }
 
+.nav-menu::-webkit-scrollbar {
+  height: 0;
+}
+
+/* 关键：让二级菜单能正常弹出 */
 .menu-item {
   position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
 }
 
+/* 按钮样式：简约办公风 */
 .menu-button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
-  min-width: 80px;
-  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .menu-button:hover {
-  background-color: #2980b9;
+  background: #e6f0ff;
+  border-color: #2d5c9b;
+  color: #2d5c9b;
 }
 
-.sub-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
+/* --------------------------
+   二级菜单 · 永远可见 · 不被遮挡
+--------------------------- */
+.sub-menu,
+.task-sub-menu {
+  background: #ffffff;
   color: #333;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  min-width: 200px;
-  z-index: 1001;
-  margin-top: 5px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 8px;
+  min-width: 180px;
+  z-index: 99999; /* 最高层级 */
+  border: 1px solid #e1e4e8;
 }
 
 .skill-book-menu {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .skill-item {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 4px;
+  font-size: 13px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  position: relative;
+  font-weight: 500;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .skill-item:hover {
-  background-color: #f0f0f0;
+  background-color: #f1f5f9;
 }
 
 .skill-item.selected {
-  background-color: #e3f2fd;
-  color: #2196f3;
-}
-
-.task-sub-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  min-width: 250px;
-  z-index: 1002;
-  margin-top: 5px;
+  background-color: #e6f0ff;
+  color: #2d5c9b;
+  font-weight: 500;
 }
 
 .task-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 4px;
+  font-size: 13px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-bottom: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .task-item:hover {
-  background-color: #f0f0f0;
+  background-color: #f1f5f9;
 }
 
 .task-title {
-  font-size: 14px;
   font-weight: 500;
+  color: #333;
 }
 
 .level-tag {
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 500;
+  color: #fff;
 }
 
 .level-tag.beginner {
-  background-color: #27ae60;
-  color: white;
+  background-color: #2e7d32;
 }
-
 .level-tag.intermediate {
-  background-color: #f39c12;
-  color: white;
+  background-color: #f59e0b;
 }
-
 .level-tag.advanced {
-  background-color: #e74c3c;
-  color: white;
+  background-color: #d32f2f;
 }
 
+/* --------------------------
+   手机完美适配
+--------------------------- */
 @media (max-width: 768px) {
-  .nav-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .top-navigation {
+    padding: 4px 8px;
   }
-  
-  .status-info {
-    gap: 10px;
+  .nav-header h1 {
+    font-size: 14px;
   }
-  
-  .nav-menu {
-    flex-direction: row;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-  
   .menu-button {
-    padding: 5px 10px;
+    padding: 4px 8px;
     font-size: 11px;
-    min-width: 70px;
-  }
-  
-  .sub-menu {
-    position: static;
-    margin-top: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .task-sub-menu {
-    position: static;
-    margin-left: 20px;
-    margin-top: 5px;
   }
 }
