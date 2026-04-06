@@ -46,7 +46,13 @@
 
 .nav-menu {
   display: flex;
-  gap: 20px;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 5px 0;
 }
 
 .menu-item {
@@ -57,11 +63,14 @@
   background-color: #3498db;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   transition: background-color 0.3s ease;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
 }
 
 .menu-button:hover {
