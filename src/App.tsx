@@ -159,7 +159,7 @@ function App() {
         const currentTaskProgress = userProgress.taskProgress[task.taskId] || {
           taskId: task.taskId,
           practiceCount: 0,
-          records: [],
+          records: [] as PracticeRecord[],
           isMastered: false
         };
         
@@ -249,7 +249,7 @@ function App() {
       <main className="app-main">
         <div className="spreadsheet-container">
           <div className="univer-wrapper">
-            <UniverSpreadsheetOptimized taskData={currentTask} ref={spreadsheetRef} />
+            <UniverSpreadsheetOptimized taskData={currentTask} />
           </div>
         </div>
       </main>
