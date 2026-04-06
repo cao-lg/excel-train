@@ -181,8 +181,16 @@
   }
   
   .nav-menu {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .menu-button {
+    padding: 5px 10px;
+    font-size: 11px;
+    min-width: 70px;
   }
   
   .sub-menu {
