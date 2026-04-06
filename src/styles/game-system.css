@@ -1,0 +1,230 @@
+.game-system {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.game-system h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.player-status {
+  background-color: white;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.level-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.level-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3498db;
+}
+
+.level-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
+.experience-bar {
+  position: relative;
+  background-color: #ecf0f1;
+  border-radius: 20px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.experience-fill {
+  background-color: #27ae60;
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+.experience-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.achievements-section {
+  margin-bottom: 20px;
+}
+
+.achievements-section h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.achievement-item {
+  background-color: white;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.achievement-item.unlocked {
+  border-left: 4px solid #27ae60;
+}
+
+.achievement-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ecf0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #7f8c8d;
+}
+
+.achievement-item.unlocked .achievement-icon {
+  background-color: #d4edda;
+  color: #27ae60;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.achievement-description {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.achievement-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  background-color: #ecf0f1;
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: #3498db;
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.achievement-item.unlocked .progress-fill {
+  background-color: #27ae60;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #7f8c8d;
+  min-width: 50px;
+}
+
+.stats-section {
+  margin-bottom: 20px;
+}
+
+.stats-section h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.stat-item {
+  background-color: white;
+  border-radius: 6px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  display: block;
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #3498db;
+}
+
+.test-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.test-button:hover {
+  background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+  .game-system {
+    padding: 10px;
+  }
+  
+  .player-status {
+    padding: 15px;
+  }
+  
+  .achievement-item {
+    padding: 10px;
+  }
+  
+  .stat-item {
+    padding: 10px;
+  }
+}

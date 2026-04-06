@@ -1,0 +1,156 @@
+.validation-feedback-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.validation-feedback {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.validation-feedback.correct {
+  border-top: 4px solid #4caf50;
+}
+
+.validation-feedback.incorrect {
+  border-top: 4px solid #f44336;
+}
+
+.validation-feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.validation-feedback-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.validation-feedback-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.validation-feedback-close:hover {
+  background-color: #f0f0f0;
+}
+
+.validation-feedback-content {
+  padding: 20px;
+}
+
+.validation-feedback-message {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.validation-feedback-details {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.validation-feedback-details li {
+  margin-bottom: 8px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.validation-feedback-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.validation-feedback-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.validation-feedback-button:hover {
+  background-color: #2980b9;
+}
+
+.validation-feedback-button:active {
+  background-color: #1f618d;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .validation-feedback {
+    width: 95%;
+  }
+  
+  .validation-feedback-header {
+    padding: 12px 16px;
+  }
+  
+  .validation-feedback-header h3 {
+    font-size: 16px;
+  }
+  
+  .validation-feedback-content {
+    padding: 16px;
+  }
+  
+  .validation-feedback-message {
+    font-size: 14px;
+  }
+  
+  .validation-feedback-footer {
+    padding: 12px 16px;
+  }
+  
+  .validation-feedback-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
