@@ -91,46 +91,38 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
         </div>
       </div>
       <div className="nav-menu">
-        <div className="menu-item skill-book">
-          <button 
-            className="menu-button"
-            onClick={() => setShowSkillBook(!showSkillBook)}
+        {skills.map(skill => (
+          <div 
+            key={skill} 
+            className="menu-item skill-item"
           >
-            订单菜单
-          </button>
-          {showSkillBook && (
-            <div className="sub-menu skill-book-menu">
-              {skills.map(skill => (
-                <div 
-                  key={skill} 
-                  className={`skill-item ${selectedSkill === skill ? 'selected' : ''}`}
-                  onClick={() => handleSkillSelect(skill)}
-                >
-                  <span>{skill}</span>
-                  {selectedSkill === skill && showTasks && (
-                    <div className="task-sub-menu">
-                      {taskList
-                        .filter(task => task.skillPoint === skill)
-                        .map(task => (
-                          <div 
-                            key={task.id} 
-                            className="task-item"
-                            onClick={() => handleTaskSelect(task.id)}
-                          >
-                            <span className="task-title">{task.title}</span>
-                            <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : 'advanced'}`}>
-                              {task.level}
-                            </span>
-                          </div>
-                        ))
-                      }
+            <button 
+              className="menu-button"
+              onClick={() => handleSkillSelect(skill)}
+            >
+              {skill}
+            </button>
+            {selectedSkill === skill && showTasks && (
+              <div className="sub-menu task-sub-menu">
+                {taskList
+                  .filter(task => task.skillPoint === skill)
+                  .map(task => (
+                    <div 
+                      key={task.id} 
+                      className="task-item"
+                      onClick={() => handleTaskSelect(task.id)}
+                    >
+                      <span className="task-title">{task.title}</span>
+                      <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : 'advanced'}`}>
+                        {task.level}
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  ))
+                }
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
