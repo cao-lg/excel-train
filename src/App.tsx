@@ -249,7 +249,7 @@ function App() {
       <main className="app-main">
         <div className="spreadsheet-container">
           <div className="univer-wrapper">
-            <UniverSpreadsheetOptimized taskData={currentTask} />
+            <UniverSpreadsheetOptimized taskData={currentTask} ref={spreadsheetRef as any} />
           </div>
         </div>
       </main>

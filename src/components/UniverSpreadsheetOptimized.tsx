@@ -13,7 +13,7 @@ export interface UniverSpreadsheetOptimizedProps {
 }
 
 const UniverSpreadsheetOptimized = React.forwardRef<UniverSpreadsheetRef, UniverSpreadsheetOptimizedProps>(({ taskData }, ref) => {
-  return <UniverSpreadsheet taskData={taskData} ref={ref} />;
+  return <UniverSpreadsheet taskData={taskData} ref={ref as any} />;
 });
 
 UniverSpreadsheetOptimized.displayName = 'UniverSpreadsheetOptimized';
