@@ -9,10 +9,18 @@ interface TaskHintProps {
 
 const TaskHint: React.FC<TaskHintProps> = ({ taskData, onClose, onSubmit }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isExpanded, setIsExpanded] = useState(true);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const hintRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (taskData) {
+      const centerX = window.innerWidth / 2 - 150;
+      const centerY = window.innerHeight / 2 - 200;
+      setPosition({ x: centerX, y: centerY });
+    }
+  }, [taskData]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.target === hintRef.current || hintRef.current?.contains(e.target as Node)) {
