@@ -26,7 +26,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     { id: 'task-2-3', title: '线性插值填充缺失值', skillPoint: '数据清洗', level: '中级' },
     { id: 'task-3-1', title: '单元格格式设置', skillPoint: '数据整理', level: '初级' },
     { id: 'task-4-1', title: '逻辑函数应用', skillPoint: '基础运算', level: '初级' },
-    { id: 'task-4-2', title: '逻辑函数应用', skillPoint: '基础运算', level: '初级' },
+    { id: 'task-4-2', title: 'AND/OR函数应用', skillPoint: '基础运算', level: '初级' },
     { id: 'task-4-3', title: '文本函数应用', skillPoint: '基础运算', level: '中级' },
     { id: 'task-5-1', title: 'VLOOKUP基础应用', skillPoint: '高级查询', level: '中级' },
     { id: 'task-5-2', title: 'INDEX-MATCH函数应用', skillPoint: '高级查询', level: '中级' },
