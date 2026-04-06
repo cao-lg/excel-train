@@ -7,16 +7,3 @@ directory = "dist"
 
 [env.production]
 pages_project_name = "data-alchemist"
-
-[d1_databases]
-DATA_ALCHEMIST_DB = {
-  binding = "DATA_ALCHEMIST_DB",
-  database_name = "data-alchemist-db",
-  database_id = "<YOUR_DATABASE_ID>"
-}
-
-[kv_namespaces]
-[[kv_namespaces]]
-binding = "TASK_CACHE"
-id = "<YOUR_KV_NAMESPACE_ID>"
-preview_id = "<YOUR_KV_NAMESPACE_ID>"

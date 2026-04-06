@@ -39,7 +39,7 @@ interface UniverSpreadsheetRef {
   getTargetCellsFormulas: (cells: string[]) => Record<string, string>;
 }
 
-const UniverSpreadsheet: React.FC<UniverSpreadsheetProps> = React.forwardRef<UniverSpreadsheetRef, UniverSpreadsheetProps>(({ taskData }, ref) => {
+const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadsheetProps>(({ taskData }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const univerRef = useRef<FUniver | null>(null);
   const prevTaskIdRef = useRef<string | null>(null);
@@ -197,5 +197,7 @@ const UniverSpreadsheet: React.FC<UniverSpreadsheetProps> = React.forwardRef<Uni
     />
   );
 });
+
+UniverSpreadsheet.displayName = 'UniverSpreadsheet';
 
 export default UniverSpreadsheet;

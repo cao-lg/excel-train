@@ -12,8 +12,10 @@ interface UniverSpreadsheetRef {
   getTargetCellsFormulas: (cells: string[]) => Record<string, string>;
 }
 
-const UniverSpreadsheetOptimized: React.FC<UniverSpreadsheetOptimizedProps> = React.forwardRef<UniverSpreadsheetRef, UniverSpreadsheetOptimizedProps>(({ taskData }, ref) => {
+const UniverSpreadsheetOptimized = React.forwardRef<UniverSpreadsheetRef, UniverSpreadsheetOptimizedProps>(({ taskData }, ref) => {
   return <UniverSpreadsheet taskData={taskData} ref={ref} />;
 });
+
+UniverSpreadsheetOptimized.displayName = 'UniverSpreadsheetOptimized';
 
 export default UniverSpreadsheetOptimized;

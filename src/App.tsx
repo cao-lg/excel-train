@@ -13,17 +13,37 @@ interface UniverSpreadsheetRef {
   getTargetCellsFormulas: (cells: string[]) => Record<string, string>;
 }
 
+interface PracticeRecord {
+  taskId: string;
+  attemptCount: number;
+  firstTimeSuccess: boolean;
+  completedAt: string;
+}
+
+interface TaskProgress {
+  taskId: string;
+  practiceCount: number;
+  records: PracticeRecord[];
+  isMastered: boolean;
+}
+
 interface UserProgress {
   completedTasks: string[];
   currentLevel: number;
   experience: number;
   achievements: string[];
+  taskProgress: Record<string, TaskProgress>;
 }
 
 function App() {
   const [currentTask, setCurrentTask] = useState<any>(null);
   const spreadsheetRef = useRef<UniverSpreadsheetRef>(null);
-  const [validationFeedback, setValidationFeedback] = useState({
+  const [validationFeedback, setValidationFeedback] = useState<{
+    isVisible: boolean;
+    isCorrect: boolean;
+    message: string;
+    details: string[];
+  }>({
     isVisible: false,
     isCorrect: false,
     message: '',
@@ -33,7 +53,8 @@ function App() {
     completedTasks: [],
     currentLevel: 1,
     experience: 0,
-    achievements: []
+    achievements: [],
+    taskProgress: {}
   });
 
   const handleTaskLoad = (task: any) => {
@@ -102,7 +123,7 @@ function App() {
               // 验证公式是否正确
               let formulaCorrect = true;
               if (rule.formulaFingerprint && rule.formulaFingerprint.length > 0) {
-                formulaCorrect = rule.formulaFingerprint.every(func => 
+                formulaCorrect = rule.formulaFingerprint.every((func: string) => 
                   userFormula.toUpperCase().includes(func.toUpperCase())
                 );
               }
@@ -141,8 +162,38 @@ function App() {
         // 4. 计算积分奖励
         const experienceReward = task.level === '初级' ? 100 : task.level === '中级' ? 200 : 300;
         
-        // 5. 更新用户进度
-        const newCompletedTasks = [...userProgress.completedTasks, task.taskId];
+        // 5. 更新任务进度记录
+        const currentTaskProgress = userProgress.taskProgress[task.taskId] || {
+          taskId: task.taskId,
+          practiceCount: 0,
+          records: [],
+          isMastered: false
+        };
+        
+        const isFirstTime = !userProgress.completedTasks.includes(task.taskId);
+        const newPracticeRecord: PracticeRecord = {
+          taskId: task.taskId,
+          attemptCount: 1,
+          firstTimeSuccess: isFirstTime,
+          completedAt: new Date().toISOString()
+        };
+        
+        const newTaskProgress: TaskProgress = {
+          ...currentTaskProgress,
+          practiceCount: currentTaskProgress.practiceCount + 1,
+          records: [...currentTaskProgress.records, newPracticeRecord],
+          isMastered: currentTaskProgress.practiceCount + 1 >= 3
+        };
+        
+        const newTaskProgressMap = {
+          ...userProgress.taskProgress,
+          [task.taskId]: newTaskProgress
+        };
+        
+        // 6. 更新用户进度
+        const newCompletedTasks = isFirstTime 
+          ? [...userProgress.completedTasks, task.taskId]
+          : userProgress.completedTasks;
         const newExperience = userProgress.experience + experienceReward;
         const newLevel = Math.floor(newExperience / 1000) + 1;
         
@@ -150,10 +201,15 @@ function App() {
           completedTasks: newCompletedTasks,
           currentLevel: newLevel,
           experience: newExperience,
-          achievements: userProgress.achievements
+          achievements: userProgress.achievements,
+          taskProgress: newTaskProgressMap
         });
         
-        // 6. 显示验证反馈
+        // 7. 显示验证反馈
+        const masteryMessage = newTaskProgress.isMastered 
+          ? '🎉 恭喜！你已经掌握了这个技能！' 
+          : `还需练习 ${3 - newTaskProgress.practiceCount} 次即可掌握`;
+        
         setValidationFeedback({
           isVisible: true,
           isCorrect: true,
@@ -163,6 +219,8 @@ function App() {
             `获得经验值: +${experienceReward}`,
             `当前等级: ${newLevel}`,
             `当前经验: ${newExperience}`,
+            `练习次数: ${newTaskProgress.practiceCount}`,
+            masteryMessage,
             '继续加油，挑战更多任务！'
           ]
         });
