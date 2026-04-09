@@ -1,4 +1,4 @@
-name = "data-alchemist"
+name = "excel-train"
 type = "pages"
 
 [build]
@@ -6,4 +6,4 @@ command = "npm run build"
 directory = "dist"
 
 [env.production]
-pages_project_name = "data-alchemist"
+pages_project_name = "excel-train"
