@@ -67,86 +67,82 @@ function App() {
         return;
       }
       
-      const targetCells = task.targetCells;
-      const userAnswers = spreadsheetRef.current.getTargetCellsValues(targetCells);
-      const userFormulas = spreadsheetRef.current.getTargetCellsFormulas(targetCells);
+      const userAnswers = spreadsheetRef.current.getTargetCellsValues([]);
+      const userFormulas = spreadsheetRef.current.getTargetCellsFormulas([]);
       
       console.log('用户答案:', userAnswers);
       console.log('用户公式:', userFormulas);
       console.log('验证规则:', task.validationRules);
       
-      // 2. 使用验证规则检查答案
+      // 2. 使用验证规则检查答案 - 验证所有在 validationRules 中定义的单元格
       const validationDetails: string[] = [];
       let allCorrect = true;
       
-      for (const cell of targetCells) {
+      for (const [cell, rule] of Object.entries(task.validationRules)) {
         const userValue = userAnswers[cell];
         const userFormula = userFormulas[cell];
-        const rule = task.validationRules[cell];
+        let isCorrect = false;
+        let errorMessage = '';
         
-        if (rule) {
-          let isCorrect = false;
-          let errorMessage = '';
-          
-          // 根据不同的验证类型进行验证
-          switch (rule.type) {
-            case 'value':
-              // 验证值是否匹配预期值
-              // 处理数值比较，允许一定的精度误差
-              const expected = rule.expectedValue;
-              if (typeof expected === 'number' && typeof userValue === 'number') {
-                isCorrect = Math.abs(expected - userValue) < 0.01;
-              } else {
-                isCorrect = expected === userValue;
-              }
-              if (!isCorrect) {
-                errorMessage = `答案错误，预期值为 ${rule.expectedValue}`;
-              }
-              break;
-            case 'formula':
-              // 验证值是否匹配预期值
-              const expectedValue = rule.expectedValue;
-              let valueCorrect = false;
-              if (typeof expectedValue === 'number' && typeof userValue === 'number') {
-                valueCorrect = Math.abs(expectedValue - userValue) < 0.01;
-              } else {
-                valueCorrect = expectedValue === userValue;
-              }
-              
-              // 验证公式是否正确
-              let formulaCorrect = true;
-              if (rule.formulaFingerprint && rule.formulaFingerprint.length > 0) {
-                formulaCorrect = rule.formulaFingerprint.every((func: string) => 
-                  userFormula.toUpperCase().includes(func.toUpperCase())
-                );
-              }
-              
-              isCorrect = valueCorrect && formulaCorrect;
-              
-              if (!valueCorrect) {
-                errorMessage = `答案错误，预期值为 ${expectedValue}`;
-              } else if (!formulaCorrect) {
-                errorMessage = `公式错误，需要使用 ${rule.formulaFingerprint?.join('、')} 函数`;
-              }
-              break;
-            case 'format':
-              // 格式验证暂时简化处理
-              isCorrect = true;
-              break;
-            default:
-              // 默认检查值是否存在
-              isCorrect = userValue !== null && userValue !== undefined && userValue !== '';
-              if (!isCorrect) {
-                errorMessage = '请填写该单元格';
-              }
-          }
-          
-          if (isCorrect) {
-            validationDetails.push(`✅ ${cell}: 答案正确`);
-          } else {
-            validationDetails.push(`❌ ${cell}: ${errorMessage}`);
-            allCorrect = false;
-          }
+        // 根据不同的验证类型进行验证
+        switch (rule.type) {
+          case 'value':
+            // 验证值是否匹配预期值
+            // 处理数值比较，允许一定的精度误差
+            const expected = rule.expectedValue;
+            if (typeof expected === 'number' && typeof userValue === 'number') {
+              isCorrect = Math.abs(expected - userValue) < 0.01;
+            } else {
+              isCorrect = expected === userValue;
+            }
+            if (!isCorrect) {
+              errorMessage = `答案错误，预期值为 ${rule.expectedValue}`;
+            }
+            break;
+          case 'formula':
+          case 'formula_value':
+            // 验证值是否匹配预期值
+            const expectedValue = rule.expectedValue;
+            let valueCorrect = false;
+            if (typeof expectedValue === 'number' && typeof userValue === 'number') {
+              valueCorrect = Math.abs(expectedValue - userValue) < 0.01;
+            } else {
+              valueCorrect = expectedValue === userValue;
+            }
+            
+            // 验证公式是否正确（如果有公式指纹要求）
+            let formulaCorrect = true;
+            if (rule.formulaFingerprint && rule.formulaFingerprint.length > 0) {
+              formulaCorrect = rule.formulaFingerprint.every((func: string) => 
+                userFormula && userFormula.toUpperCase().includes(func.toUpperCase())
+              );
+            }
+            
+            isCorrect = valueCorrect && formulaCorrect;
+            
+            if (!valueCorrect) {
+              errorMessage = `答案错误，预期值为 ${expectedValue}`;
+            } else if (!formulaCorrect) {
+              errorMessage = `公式错误，需要使用 ${rule.formulaFingerprint?.join('、')} 函数`;
+            }
+            break;
+          case 'format':
+            // 格式验证暂时简化处理
+            isCorrect = true;
+            break;
+          default:
+            // 默认检查值是否存在
+            isCorrect = userValue !== null && userValue !== undefined && userValue !== '';
+            if (!isCorrect) {
+              errorMessage = '请填写该单元格';
+            }
+        }
+        
+        if (isCorrect) {
+          validationDetails.push(`✅ ${cell}: 答案正确`);
+        } else {
+          validationDetails.push(`❌ ${cell}: ${errorMessage}`);
+          allCorrect = false;
         }
       }
       
