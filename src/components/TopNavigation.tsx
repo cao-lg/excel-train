@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import * as api from '../services/api';
 
 interface UserProgress {
@@ -14,7 +14,6 @@ interface TopNavigationProps {
 }
 
 const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress }) => {
-  const [showSkillBook, setShowSkillBook] = useState<boolean>(false);
   const [showTasks, setShowTasks] = useState<boolean>(false);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -67,7 +66,6 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     try {
       const taskData = await api.getTask(taskId);
       onTaskLoad(taskData);
-      setShowSkillBook(false);
       setShowTasks(false);
     } catch (error) {
       console.error('Error loading task:', error);

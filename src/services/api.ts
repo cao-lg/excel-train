@@ -17,9 +17,11 @@ interface TaskData {
     type: string;
     expectedValue?: any;
     formulaFingerprint?: string[];
+    tolerance?: number;
+    format?: string;
   }>;
   hints: string[];
-  steps: string[]; // 任务要领步骤
+  steps: string[];
 }
 
 interface ValidationResult {
@@ -27,7 +29,11 @@ interface ValidationResult {
   results: Array<{
     cell: string;
     correct: boolean;
+    errorType?: string;
     errorMessage: string;
+    suggestion?: string;
+    actualValue?: any;
+    expectedValue?: any;
   }>;
   experience: number;
   message: string;
@@ -51,11 +57,9 @@ interface Achievement {
 // 获取任务数据
 export async function getTask(taskId: string): Promise<TaskData> {
   try {
-    // 直接使用模拟数据，避免API请求错误
     return getMockTask(taskId);
   } catch (error) {
     console.error('Error fetching task:', error);
-    // 返回模拟数据作为 fallback
     return getMockTask(taskId);
   }
 }
@@ -63,26 +67,24 @@ export async function getTask(taskId: string): Promise<TaskData> {
 // 校验任务
 export async function validateTask(_taskId: string, data: {
   userActions: any[];
-  targetCells: Record<string, string>;
+  targetCells: Record<string, any>;
+  cellValues?: Record<string, any>;
+  formulas?: Record<string, string>;
 }): Promise<ValidationResult> {
   try {
-    // 直接使用模拟数据，避免API请求错误
-    return getMockValidationResult(data);
+    return getMockValidationResult(_taskId, data);
   } catch (error) {
     console.error('Error validating task:', error);
-    // 返回模拟结果作为 fallback
-    return getMockValidationResult(data);
+    return getMockValidationResult(_taskId, data);
   }
 }
 
 // 获取用户进度
 export async function getUserProgress(userId: string): Promise<UserProgress> {
   try {
-    // 直接使用模拟数据，避免API请求错误
     return getMockProgress(userId);
   } catch (error) {
     console.error('Error fetching user progress:', error);
-    // 返回模拟数据作为 fallback
     return getMockProgress(userId);
   }
 }
@@ -94,14 +96,12 @@ export async function updateUserProgress(userId: string, _data: {
   score: number;
 }): Promise<{ success: boolean; updatedProgress: UserProgress }> {
   try {
-    // 直接使用模拟数据，避免API请求错误
     return {
       success: true,
       updatedProgress: getMockProgress(userId),
     };
   } catch (error) {
     console.error('Error updating user progress:', error);
-    // 返回模拟结果作为 fallback
     return {
       success: true,
       updatedProgress: getMockProgress(userId),
@@ -112,11 +112,9 @@ export async function updateUserProgress(userId: string, _data: {
 // 获取成就列表
 export async function getAchievements(): Promise<Achievement[]> {
   try {
-    // 直接使用模拟数据，避免API请求错误
     return getMockAchievements();
   } catch (error) {
     console.error('Error fetching achievements:', error);
-    // 返回模拟数据作为 fallback
     return getMockAchievements();
   }
 }
@@ -152,9 +150,10 @@ function getMockTask(id: string): TaskData {
       targetCells: ['C5'],
       validationRules: {
         'C5': {
-          type: 'formula',
+          type: 'formula_value',
           expectedValue: 3700,
-          formulaFingerprint: ['SUM']
+          formulaFingerprint: ['SUM'],
+          tolerance: 0.01
         }
       },
       hints: ['使用SUM函数计算总销售额', '选择C2到C4的范围'],
@@ -195,7 +194,8 @@ function getMockTask(id: string): TaskData {
       validationRules: {
         'C3': {
           type: 'value',
-          expectedValue: 1250
+          expectedValue: 1250,
+          tolerance: 0.01
         }
       },
       hints: ['尝试使用AVERAGE函数计算平均值来填充缺失值', '或使用DELETE键删除整行'],
@@ -236,7 +236,8 @@ function getMockTask(id: string): TaskData {
       validationRules: {
         'C2': {
           type: 'format',
-          expectedValue: 'currency'
+          expectedValue: 'currency',
+          format: 'currency'
         }
       },
       hints: ['使用货币格式显示销售额', '选择C2到C4范围后设置格式'],
@@ -316,7 +317,11 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C3'],
       validationRules: {
-        'C3': { type: 'value', expectedValue: 1250 }
+        'C3': {
+          type: 'value',
+          expectedValue: 1250,
+          tolerance: 0.01
+        }
       },
       hints: ['使用线性插值公式计算缺失值', '公式：(上一个值 + 下一个值) / 2'],
       steps: [
@@ -356,7 +361,11 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C2:C7'],
       validationRules: {
-        'C7': { type: 'value', expectedValue: 1520 }
+        'C7': {
+          type: 'value',
+          expectedValue: 1520,
+          tolerance: 1
+        }
       },
       hints: ['使用指数平滑公式：α*实际值 + (1-α)*预测值', 'α通常取0.3'],
       steps: [
@@ -404,7 +413,11 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C2:C10'],
       validationRules: {
-        'C10': { type: 'value', expectedValue: 0.94 }
+        'C10': {
+          type: 'value',
+          expectedValue: 0.94,
+          tolerance: 0.01
+        }
       },
       hints: ['计算各月份的季节指数', '季节指数=当月销售额/月平均销售额'],
       steps: [
@@ -444,7 +457,11 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C2:C7'],
       validationRules: {
-        'C7': { type: 'value', expectedValue: 1660 }
+        'C7': {
+          type: 'value',
+          expectedValue: 1660,
+          tolerance: 1
+        }
       },
       hints: ['使用LINEST函数计算回归系数', '或使用趋势线功能'],
       steps: [
@@ -620,7 +637,12 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['F2'],
       validationRules: {
-        'F2': { type: 'value', expectedValue: 200 }
+        'F2': {
+          type: 'formula_value',
+          expectedValue: 200,
+          formulaFingerprint: ['VLOOKUP'],
+          tolerance: 0.01
+        }
       },
       hints: ['使用VLOOKUP函数进行精确匹配查询', 'VLOOKUP(查找值, 查找范围, 返回列, 匹配类型)'],
       steps: [
@@ -664,7 +686,12 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['F2'],
       validationRules: {
-        'F2': { type: 'value', expectedValue: 200 }
+        'F2': {
+          type: 'formula_value',
+          expectedValue: 200,
+          formulaFingerprint: ['INDEX', 'MATCH'],
+          tolerance: 0.01
+        }
       },
       hints: ['使用INDEX-MATCH函数组合进行双向查询', 'INDEX返回指定位置的值，MATCH返回查找值的位置'],
       steps: [
@@ -818,10 +845,10 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['D2:D4', 'D5'],
       validationRules: {
-        'D2': { type: 'value', expectedValue: 1000 },
-        'D3': { type: 'value', expectedValue: 3000 },
-        'D4': { type: 'value', expectedValue: 3000 },
-        'D5': { type: 'value', expectedValue: 7000 }
+        'D2': { type: 'value', expectedValue: 1000, tolerance: 0.01 },
+        'D3': { type: 'value', expectedValue: 3000, tolerance: 0.01 },
+        'D4': { type: 'value', expectedValue: 3000, tolerance: 0.01 },
+        'D5': { type: 'value', expectedValue: 7000, tolerance: 0.01 }
       },
       hints: ['使用数组公式同时计算多个单元格', '按Ctrl+Shift+Enter确认数组公式'],
       steps: [
@@ -914,11 +941,11 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['B9:B13'],
       validationRules: {
-        'B9': { type: 'value', expectedValue: 1333.33 },
-        'B10': { type: 'value', expectedValue: 1350 },
-        'B11': { type: 'value', expectedValue: 1600 },
-        'B12': { type: 'value', expectedValue: 1000 },
-        'B13': { type: 'value', expectedValue: 216.02 }
+        'B9': { type: 'value', expectedValue: 1333.33, tolerance: 0.01 },
+        'B10': { type: 'value', expectedValue: 1350, tolerance: 0.01 },
+        'B11': { type: 'value', expectedValue: 1600, tolerance: 0.01 },
+        'B12': { type: 'value', expectedValue: 1000, tolerance: 0.01 },
+        'B13': { type: 'value', expectedValue: 216.02, tolerance: 0.01 }
       },
       hints: ['使用AVERAGE、MEDIAN、MAX、MIN、STDEV函数', '选择正确的数据范围'],
       steps: [
@@ -961,7 +988,7 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C4:C7'],
       validationRules: {
-        'C7': { type: 'value', expectedValue: 1466.67 }
+        'C7': { type: 'value', expectedValue: 1466.67, tolerance: 0.01 }
       },
       hints: ['使用AVERAGE函数计算移动平均', '选择连续的3个数据点'],
       steps: [
@@ -1155,33 +1182,1308 @@ function getMockTask(id: string): TaskData {
         '步骤5: 检查图表是否正确显示销售额和增长率',
         '步骤6: 提交任务，验证结果'
       ]
+    },
+    'task-1-2': {
+      taskId: 'task-1-2',
+      skillPoint: '数据采集',
+      level: '中级',
+      title: 'API数据抓取与处理',
+      description: '从Web API获取JSON数据并转换为表格格式',
+      initialData: {
+        sheetName: '数据采集',
+        cellData: {
+          'A1': { v: '产品ID' },
+          'B1': { v: '产品名称' },
+          'C1': { v: '价格' },
+          'D1': { v: '库存' },
+          'A2': { v: '101' },
+          'B2': { v: '笔记本电脑' },
+          'C2': { v: 5999 },
+          'D2': { v: 50 },
+          'A3': { v: '102' },
+          'B3': { v: '无线鼠标' },
+          'C3': { v: 129 },
+          'D3': { v: 200 },
+          'A4': { v: '103' },
+          'B4': { v: '机械键盘' },
+          'C4': { v: 499 },
+          'D4': { v: 150 }
+        },
+        rowCount: 15,
+        columnCount: 4
+      },
+      targetCells: ['C5'],
+      validationRules: {
+        'C5': { type: 'value', expectedValue: 6627 }
+      },
+      hints: ['使用SUM函数计算产品总价', '选择C2到C4的范围'],
+      steps: [
+        '步骤1: 了解数据结构，产品价格位于C列',
+        '步骤2: 定位到C5单元格',
+        '步骤3: 输入"=SUM(C2:C4)"，计算所有产品价格总和',
+        '步骤4: 按Enter键确认公式，检查结果是否正确',
+        '步骤5: 提交任务，验证结果'
+      ]
+    },
+    'task-1-3': {
+      taskId: 'task-1-3',
+      skillPoint: '数据采集',
+      level: '高级',
+      title: '多源数据融合',
+      description: '合并来自多个数据源的表格数据并去重',
+      initialData: {
+        sheetName: '数据融合',
+        cellData: {
+          'A1': { v: '数据源1 - 产品' },
+          'B1': { v: '价格' },
+          'C1': { v: '数据源2 - 产品' },
+          'D1': { v: '价格' },
+          'E1': { v: '合并后产品' },
+          'F1': { v: '合并后价格' },
+          'A2': { v: '产品A' },
+          'B2': { v: 100 },
+          'C2': { v: '产品B' },
+          'D2': { v: 150 },
+          'A3': { v: '产品B' },
+          'B3': { v: 145 },
+          'C3': { v: '产品C' },
+          'D3': { v: 200 },
+          'A4': { v: '产品D' },
+          'B4': { v: 250 },
+          'C4': { v: '产品D' },
+          'D4': { v: 245 }
+        },
+        rowCount: 15,
+        columnCount: 6
+      },
+      targetCells: ['E2:E4', 'F2:F4'],
+      validationRules: {
+        'E2': { type: 'value', expectedValue: '产品A' },
+        'E3': { type: 'value', expectedValue: '产品B' },
+        'E4': { type: 'value', expectedValue: '产品C' },
+        'F2': { type: 'value', expectedValue: 100 },
+        'F3': { type: 'value', expectedValue: 145 },
+        'F4': { type: 'value', expectedValue: 200 }
+      },
+      hints: ['首先提取所有唯一产品名称', '使用VLOOKUP或INDEX-MATCH查找价格', '注意去重'],
+      steps: [
+        '步骤1: 在E2单元格输入"=A2"，从数据源1提取产品A',
+        '步骤2: 在E3单元格输入"=A3"，提取产品B',
+        '步骤3: 在E4单元格输入"=C3"，从数据源2提取产品C',
+        '步骤4: 在F2单元格输入"=VLOOKUP(E2,A2:B4,2,FALSE)"',
+        '步骤5: 向下拖动填充柄，使用数据源1的价格',
+        '步骤6: 检查合并结果是否正确',
+        '步骤7: 提交任务，验证结果'
+      ]
+    },
+    'task-3-2': {
+      taskId: 'task-3-2',
+      skillPoint: '数据整理',
+      level: '中级',
+      title: '数据转置与重组',
+      description: '将横向数据转换为纵向表格，便于分析',
+      initialData: {
+        sheetName: '数据整理',
+        cellData: {
+          'A1': { v: '产品' },
+          'B1': { v: 'Q1' },
+          'C1': { v: 'Q2' },
+          'D1': { v: 'Q3' },
+          'E1': { v: 'Q4' },
+          'A2': { v: '产品A' },
+          'B2': { v: 1000 },
+          'C2': { v: 1200 },
+          'D2': { v: 1500 },
+          'E2': { v: 1300 },
+          'A3': { v: '产品B' },
+          'B3': { v: 800 },
+          'C3': { v: 900 },
+          'D3': { v: 1100 },
+          'E3': { v: 1000 }
+        },
+        rowCount: 15,
+        columnCount: 5
+      },
+      targetCells: ['G1:J9'],
+      validationRules: {
+        'G2': { type: 'value', expectedValue: '产品A' },
+        'H2': { type: 'value', expectedValue: 'Q1' },
+        'I2': { type: 'value', expectedValue: 1000 },
+        'G5': { type: 'value', expectedValue: '产品B' },
+        'H5': { type: 'value', expectedValue: 'Q1' },
+        'I5': { type: 'value', expectedValue: 800 }
+      },
+      hints: ['使用转置功能重组数据', '手动或使用公式创建新表格'],
+      steps: [
+        '步骤1: 在G1单元格输入"产品"，H1输入"季度"，I1输入"销售额"',
+        '步骤2: 在G2单元格输入"=A2"，H2输入"=B$1"，I2输入"=B2"',
+        '步骤3: 复制G2:I2到G3，修改H3为"=C$1"，I3为"=C2"',
+        '步骤4: 继续完成产品A的四个季度数据',
+        '步骤5: 同理完成产品B的数据',
+        '步骤6: 检查转置结果是否正确',
+        '步骤7: 提交任务，验证结果'
+      ]
+    },
+    'task-3-3': {
+      taskId: 'task-3-3',
+      skillPoint: '数据整理',
+      level: '高级',
+      title: '高级数据分组与汇总',
+      description: '根据多个条件对数据进行分组和层次化汇总',
+      initialData: {
+        sheetName: '数据分组',
+        cellData: {
+          'A1': { v: '日期' },
+          'B1': { v: '地区' },
+          'C1': { v: '产品' },
+          'D1': { v: '销售额' },
+          'A2': { v: '2023-01-01' },
+          'B2': { v: '华东' },
+          'C2': { v: '产品A' },
+          'D2': { v: 1000 },
+          'A3': { v: '2023-01-01' },
+          'B3': { v: '华东' },
+          'C3': { v: '产品B' },
+          'D3': { v: 1500 },
+          'A4': { v: '2023-01-02' },
+          'B4': { v: '华北' },
+          'C4': { v: '产品A' },
+          'D4': { v: 1200 },
+          'A5': { v: '2023-01-02' },
+          'B5': { v: '华北' },
+          'C5': { v: '产品B' },
+          'D5': { v: 1800 }
+        },
+        rowCount: 15,
+        columnCount: 4
+      },
+      targetCells: ['F1:H5'],
+      validationRules: {
+        'F2': { type: 'value', expectedValue: '华东' },
+        'F3': { type: 'value', expectedValue: '华北' },
+        'G2': { type: 'value', expectedValue: 2500 },
+        'G3': { type: 'value', expectedValue: 3000 }
+      },
+      hints: ['使用SUMIFS进行多条件汇总', '按地区分组计算总销售额'],
+      steps: [
+        '步骤1: 在F1单元格输入"地区"，G1输入"总销售额"',
+        '步骤2: 在F2单元格输入"华东"，F3输入"华北"',
+        '步骤3: 在G2单元格输入"=SUMIFS(D2:D5,B2:B5,F2)"',
+        '步骤4: 向下拖动填充柄到G3',
+        '步骤5: 检查汇总结果是否正确',
+        '步骤6: 提交任务，验证结果'
+      ]
+    },
+    'task-6-2': {
+      taskId: 'task-6-2',
+      skillPoint: '数组与公式',
+      level: '初级',
+      title: '数组入门：批量计算',
+      description: '使用数组公式进行批量乘积计算',
+      initialData: {
+        sheetName: '数组入门',
+        cellData: {
+          'A1': { v: '产品' },
+          'B1': { v: '数量' },
+          'C1': { v: '单价' },
+          'D1': { v: '金额' },
+          'A2': { v: '产品A' },
+          'B2': { v: 5 },
+          'C2': { v: 100 },
+          'A3': { v: '产品B' },
+          'B3': { v: 3 },
+          'C3': { v: 200 },
+          'A4': { v: '产品C' },
+          'B4': { v: 2 },
+          'C4': { v: 150 }
+        },
+        rowCount: 10,
+        columnCount: 4
+      },
+      targetCells: ['D2:D4'],
+      validationRules: {
+        'D2': { type: 'value', expectedValue: 500 },
+        'D3': { type: 'value', expectedValue: 600 },
+        'D4': { type: 'value', expectedValue: 300 }
+      },
+      hints: ['使用简单的乘法公式计算金额', 'D2 = B2 * C2'],
+      steps: [
+        '步骤1: 在D2单元格输入"=B2*C2"',
+        '步骤2: 向下拖动填充柄到D4',
+        '步骤3: 检查各产品金额计算是否正确',
+        '步骤4: 提交任务，验证结果'
+      ]
+    },
+    'task-6-3': {
+      taskId: 'task-6-3',
+      skillPoint: '数组与公式',
+      level: '中级',
+      title: '数组求和与条件计算',
+      description: '使用数组公式进行复杂条件求和',
+      initialData: {
+        sheetName: '数组条件',
+        cellData: {
+          'A1': { v: '产品' },
+          'B1': { v: '地区' },
+          'C1': { v: '销售额' },
+          'A2': { v: '产品A' },
+          'B2': { v: '北京' },
+          'C2': { v: 1000 },
+          'A3': { v: '产品B' },
+          'B3': { v: '上海' },
+          'C3': { v: 1500 },
+          'A4': { v: '产品A' },
+          'B4': { v: '上海' },
+          'C4': { v: 1200 },
+          'A5': { v: '产品B' },
+          'B5': { v: '北京' },
+          'C5': { v: 1800 },
+          'E1': { v: '产品A北京总销售额' }
+        },
+        rowCount: 10,
+        columnCount: 5
+      },
+      targetCells: ['E2'],
+      validationRules: {
+        'E2': { type: 'value', expectedValue: 1000 }
+      },
+      hints: ['使用SUMIFS函数进行多条件求和', '条件1：产品=产品A，条件2：地区=北京'],
+      steps: [
+        '步骤1: 在E2单元格输入"=SUMIFS(C2:C5,A2:A5,\"产品A\",B2:B5,\"北京\")"',
+        '步骤2: 按Enter键确认公式',
+        '步骤3: 检查计算结果是否为1000',
+        '步骤4: 提交任务，验证结果'
+      ]
+    },
+    'task-7-3': {
+      taskId: 'task-7-3',
+      skillPoint: '数据透视分析',
+      level: '高级',
+      title: '数据透视表计算字段与分组',
+      description: '在数据透视表中创建计算字段并按时间分组',
+      initialData: {
+        sheetName: '透视高级',
+        cellData: {
+          'A1': { v: '日期' },
+          'B1': { v: '产品' },
+          'C1': { v: '销量' },
+          'D1': { v: '单价' },
+          'A2': { v: '2023-01-05' },
+          'B2': { v: '产品A' },
+          'C2': { v: 10 },
+          'D2': { v: 100 },
+          'A3': { v: '2023-01-15' },
+          'B3': { v: '产品B' },
+          'C3': { v: 15 },
+          'D3': { v: 150 },
+          'A4': { v: '2023-02-05' },
+          'B4': { v: '产品A' },
+          'C4': { v: 12 },
+          'D4': { v: 100 },
+          'A5': { v: '2023-02-15' },
+          'B5': { v: '产品B' },
+          'C5': { v: 18 },
+          'D5': { v: 150 }
+        },
+        rowCount: 15,
+        columnCount: 4
+      },
+      targetCells: ['F1:J10'],
+      validationRules: {
+        'G2': { type: 'value', expectedValue: 22 }
+      },
+      hints: ['在数据透视表中添加计算字段：销售额=销量*单价', '将日期分组为月份'],
+      steps: [
+        '步骤1: 选择A1:D5数据，创建数据透视表',
+        '步骤2: 将日期拖到行区域，产品拖到列区域',
+        '步骤3: 将销量拖到值区域',
+        '步骤4: 右键点击日期字段，选择"分组"，按月分组',
+        '步骤5: 点击"数据透视表分析"，添加计算字段"销售额"=销量*单价',
+        '步骤6: 检查透视表结果',
+        '步骤7: 提交任务，验证结果'
+      ]
+    },
+    'task-8-2': {
+      taskId: 'task-8-2',
+      skillPoint: '统计推断',
+      level: '初级',
+      title: '基础统计量计算',
+      description: '计算数据的基本统计指标：计数、求和、平均',
+      initialData: {
+        sheetName: '基础统计',
+        cellData: {
+          'A1': { v: '学生' },
+          'B1': { v: '成绩' },
+          'A2': { v: '张三' },
+          'B2': { v: 85 },
+          'A3': { v: '李四' },
+          'B3': { v: 92 },
+          'A4': { v: '王五' },
+          'B4': { v: 78 },
+          'A5': { v: '赵六' },
+          'B5': { v: 88 },
+          'A6': { v: '钱七' },
+          'B6': { v: 95 },
+          'D1': { v: '学生人数' },
+          'D2': { v: '总分' },
+          'D3': { v: '平均分' }
+        },
+        rowCount: 10,
+        columnCount: 4
+      },
+      targetCells: ['E1:E3'],
+      validationRules: {
+        'E1': { type: 'value', expectedValue: 5 },
+        'E2': { type: 'value', expectedValue: 438 },
+        'E3': { type: 'value', expectedValue: 87.6 }
+      },
+      hints: ['使用COUNT函数计数', '使用SUM函数求和', '使用AVERAGE函数求平均'],
+      steps: [
+        '步骤1: 在E1单元格输入"=COUNT(B2:B6)"',
+        '步骤2: 在E2单元格输入"=SUM(B2:B6)"',
+        '步骤3: 在E3单元格输入"=AVERAGE(B2:B6)"',
+        '步骤4: 检查统计结果是否正确',
+        '步骤5: 提交任务，验证结果'
+      ]
+    },
+    'task-8-3': {
+      taskId: 'task-8-3',
+      skillPoint: '统计推断',
+      level: '中级',
+      title: '相关性分析',
+      description: '计算两个变量之间的相关系数',
+      initialData: {
+        sheetName: '相关性',
+        cellData: {
+          'A1': { v: '学习时间(小时)' },
+          'B1': { v: '考试分数' },
+          'A2': { v: 2 },
+          'B2': { v: 70 },
+          'A3': { v: 4 },
+          'B3': { v: 78 },
+          'A4': { v: 6 },
+          'B4': { v: 85 },
+          'A5': { v: 8 },
+          'B5': { v: 88 },
+          'A6': { v: 10 },
+          'B6': { v: 95 },
+          'D1': { v: '相关系数' }
+        },
+        rowCount: 10,
+        columnCount: 4
+      },
+      targetCells: ['E1'],
+      validationRules: {
+        'E1': { type: 'value', expectedValue: 0.98 }
+      },
+      hints: ['使用CORREL函数计算相关系数', '相关系数接近1表示强正相关'],
+      steps: [
+        '步骤1: 在E1单元格输入"=CORREL(A2:A6,B2:B6)"',
+        '步骤2: 按Enter键确认公式',
+        '步骤3: 检查相关系数是否约为0.98',
+        '步骤4: 提交任务，验证结果'
+      ]
+    },
+    'task-10-3': {
+      taskId: 'task-10-3',
+      skillPoint: '图表制作',
+      level: '高级',
+      title: '热力图与双坐标轴图表',
+      description: '创建高级热力图展示数据密度关系',
+      initialData: {
+        sheetName: '高级图表',
+        cellData: {
+          'A1': { v: '产品/月份' },
+          'B1': { v: '1月' },
+          'C1': { v: '2月' },
+          'D1': { v: '3月' },
+          'E1': { v: '4月' },
+          'A2': { v: '产品A' },
+          'B2': { v: 100 },
+          'C2': { v: 120 },
+          'D2': { v: 150 },
+          'E2': { v: 130 },
+          'A3': { v: '产品B' },
+          'B3': { v: 80 },
+          'C3': { v: 90 },
+          'D3': { v: 110 },
+          'E3': { v: 100 },
+          'A4': { v: '产品C' },
+          'B4': { v: 200 },
+          'C4': { v: 180 },
+          'D4': { v: 220 },
+          'E4': { v: 250 }
+        },
+        rowCount: 10,
+        columnCount: 5
+      },
+      targetCells: ['A10'],
+      validationRules: {
+        'A10': { type: 'value', expectedValue: '热力图' }
+      },
+      hints: ['使用条件格式创建热力图效果', '设置颜色刻度从低到高'],
+      steps: [
+        '步骤1: 选择B2:E4单元格区域',
+        '步骤2: 点击"开始"选项卡，选择"条件格式"',
+        '步骤3: 选择"色阶"，选择三色刻度',
+        '步骤4: 调整颜色设置，低值蓝色，高值红色',
+        '步骤5: 检查热力图效果是否正确',
+        '步骤6: 提交任务，验证结果'
+      ]
+    },
+    'task-11-2': {
+      taskId: 'task-11-2',
+      skillPoint: '动态仪表盘',
+      level: '初级',
+      title: '数据验证下拉菜单',
+      description: '创建下拉菜单实现数据快速选择',
+      initialData: {
+        sheetName: '下拉菜单',
+        cellData: {
+          'A1': { v: '产品列表' },
+          'A2': { v: '产品A' },
+          'A3': { v: '产品B' },
+          'A4': { v: '产品C' },
+          'C1': { v: '选择产品' }
+        },
+        rowCount: 10,
+        columnCount: 3
+      },
+      targetCells: ['C2'],
+      validationRules: {
+        'C2': { type: 'value', expectedValue: '产品A' }
+      },
+      hints: ['使用数据验证功能创建下拉菜单', '来源选择A2:A4'],
+      steps: [
+        '步骤1: 选择C2单元格',
+        '步骤2: 点击"数据"选项卡，选择"数据验证"',
+        '步骤3: 在允许中选择"序列"',
+        '步骤4: 来源输入"=$A$2:$A$4"',
+        '步骤5: 点击确定，测试下拉菜单',
+        '步骤6: 选择"产品A"',
+        '步骤7: 提交任务，验证结果'
+      ]
+    },
+    'task-11-3': {
+      taskId: 'task-11-3',
+      skillPoint: '动态仪表盘',
+      level: '高级',
+      title: '交互式KPI仪表盘',
+      description: '创建综合KPI仪表盘，包含关键指标和趋势图',
+      initialData: {
+        sheetName: 'KPI仪表盘',
+        cellData: {
+          'A1': { v: '月份' },
+          'B1': { v: '销售额' },
+          'C1': { v: '目标' },
+          'D1': { v: '达成率' },
+          'A2': { v: '1' },
+          'B2': { v: 1000 },
+          'C2': { v: 900 },
+          'D2': { v: 1.11 },
+          'A3': { v: '2' },
+          'B3': { v: 1200 },
+          'C3': { v: 1100 },
+          'D3': { v: 1.09 },
+          'A4': { v: '3' },
+          'B4': { v: 1500 },
+          'C4': { v: 1300 },
+          'D4': { v: 1.15 },
+          'F1': { v: '选择月份' },
+          'F2': { v: 3 },
+          'H1': { v: '本月销售额' },
+          'H2': { v: '本月目标' },
+          'H3': { v: '达成率' }
+        },
+        rowCount: 15,
+        columnCount: 8
+      },
+      targetCells: ['I1:I3'],
+      validationRules: {
+        'I1': { type: 'value', expectedValue: 1500 },
+        'I2': { type: 'value', expectedValue: 1300 },
+        'I3': { type: 'value', expectedValue: 1.15 }
+      },
+      hints: ['使用INDEX-MATCH根据月份查找数据', 'F2为选择的月份'],
+      steps: [
+        '步骤1: 在I1单元格输入"=INDEX(B2:B4,F2)"',
+        '步骤2: 在I2单元格输入"=INDEX(C2:C4,F2)"',
+        '步骤3: 在I3单元格输入"=INDEX(D2:D4,F2)"',
+        '步骤4: 检查KPI数据是否正确',
+        '步骤5: 尝试修改F2的值，验证动态更新',
+        '步骤6: 提交任务，验证结果'
+      ]
+    },
+    'task-12-2': {
+      taskId: 'task-12-2',
+      skillPoint: '商业报告',
+      level: '初级',
+      title: '基础报告结构',
+      description: '创建包含标题、数据和汇总的基础报告',
+      initialData: {
+        sheetName: '基础报告',
+        cellData: {
+          'A1': { v: '月度销售报告' },
+          'A3': { v: '日期' },
+          'B3': { v: '产品' },
+          'C3': { v: '销售额' },
+          'A4': { v: '2023-01-01' },
+          'B4': { v: '产品A' },
+          'C4': { v: 1000 },
+          'A5': { v: '2023-01-02' },
+          'B5': { v: '产品B' },
+          'C5': { v: 1500 },
+          'A6': { v: '2023-01-03' },
+          'B6': { v: '产品A' },
+          'C6': { v: 1200 },
+          'A8': { v: '总计' }
+        },
+        rowCount: 15,
+        columnCount: 3
+      },
+      targetCells: ['C8'],
+      validationRules: {
+        'C8': { type: 'value', expectedValue: 3700 }
+      },
+      hints: ['使用SUM函数计算总销售额', '对C4:C6求和'],
+      steps: [
+        '步骤1: 在C8单元格输入"=SUM(C4:C6)"',
+        '步骤2: 格式化标题，设置为粗体和更大字号',
+        '步骤3: 调整列宽，使数据完整显示',
+        '步骤4: 给数据区域添加边框',
+        '步骤5: 检查报告格式和计算结果',
+        '步骤6: 提交任务，验证结果'
+      ]
+    },
+    'task-12-3': {
+      taskId: 'task-12-3',
+      skillPoint: '商业报告',
+      level: '中级',
+      title: '对比分析报告',
+      description: '创建包含同比、环比分析的商业报告',
+      initialData: {
+        sheetName: '对比报告',
+        cellData: {
+          'A1': { v: '季度销售对比报告' },
+          'A3': { v: '季度' },
+          'B3': { v: '销售额' },
+          'C3': { v: '环比增长' },
+          'D3': { v: '同比增长' },
+          'A4': { v: 'Q1' },
+          'B4': { v: 3000 },
+          'A5': { v: 'Q2' },
+          'B5': { v: 3500 },
+          'A6': { v: 'Q3' },
+          'B6': { v: 3200 },
+          'A7': { v: 'Q4' },
+          'B7': { v: 4000 },
+          'A9': { v: '去年Q1' },
+          'B9': { v: 2500 }
+        },
+        rowCount: 15,
+        columnCount: 4
+      },
+      targetCells: ['C5:C7', 'D4'],
+      validationRules: {
+        'C5': { type: 'value', expectedValue: 0.17 },
+        'C6': { type: 'value', expectedValue: -0.09 },
+        'C7': { type: 'value', expectedValue: 0.25 },
+        'D4': { type: 'value', expectedValue: 0.2 }
+      },
+      hints: ['环比=(本期-上期)/上期', '同比=(本期-去年同期)/去年同期'],
+      steps: [
+        '步骤1: 在C5单元格输入"=(B5-B4)/B4"',
+        '步骤2: 向下拖动填充柄到C7',
+        '步骤3: 在D4单元格输入"=(B4-B9)/B9"',
+        '步骤4: 格式化C列和D列为百分比格式',
+        '步骤5: 添加条件格式，正数显示绿色，负数显示红色',
+        '步骤6: 检查分析结果是否正确',
+        '步骤7: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-1': {
+      taskId: 'task-comprehensive-1',
+      skillPoint: '综合应用',
+      level: '中级',
+      title: '电商销售数据采集与分析',
+      description: '采集电商销售数据，清洗缺失值和异常值，并计算关键指标',
+      initialData: {
+        sheetName: '电商销售',
+        cellData: {
+          'A1': { v: '订单ID' },
+          'B1': { v: '日期' },
+          'C1': { v: '产品' },
+          'D1': { v: '数量' },
+          'E1': { v: '单价' },
+          'F1': { v: '金额' },
+          'A2': { v: 'O001' },
+          'B2': { v: '2023-01-01' },
+          'C2': { v: '产品A' },
+          'D2': { v: 2 },
+          'E2': { v: 100 },
+          'A3': { v: 'O002' },
+          'B3': { v: '2023-01-02' },
+          'C3': { v: '产品B' },
+          'D3': { v: 3 },
+          'E3': { v: 150 },
+          'A4': { v: 'O003' },
+          'B4': { v: '2023-01-03' },
+          'C4': { v: '产品A' },
+          'D4': { v: 1 },
+          'E4': { v: 100 },
+          'A5': { v: 'O004' },
+          'B5': { v: '2023-01-04' },
+          'C5': { v: '产品C' },
+          'D5': { v: null },
+          'E5': { v: 200 },
+          'A6': { v: 'O005' },
+          'B6': { v: '2023-01-05' },
+          'C6': { v: '产品B' },
+          'D6': { v: 5 },
+          'E6': { v: 150 },
+          'H1': { v: '数据清洗与计算' },
+          'H2': { v: '总订单数' },
+          'H3': { v: '总销售额' },
+          'H4': { v: '平均订单金额' },
+          'H5': { v: '最畅销产品' }
+        },
+        rowCount: 20,
+        columnCount: 10
+      },
+      targetCells: ['F2:F6', 'I2:I5'],
+      validationRules: {
+        'F2': { type: 'value', expectedValue: 200, tolerance: 0.01 },
+        'F3': { type: 'value', expectedValue: 450, tolerance: 0.01 },
+        'F4': { type: 'value', expectedValue: 100, tolerance: 0.01 },
+        'F5': { type: 'value', expectedValue: 200, tolerance: 0.01 },
+        'F6': { type: 'value', expectedValue: 750, tolerance: 0.01 },
+        'I2': { type: 'value', expectedValue: 5, tolerance: 0.01 },
+        'I3': { type: 'value', expectedValue: 1700, tolerance: 0.01 },
+        'I4': { type: 'value', expectedValue: 340, tolerance: 0.01 },
+        'I5': { type: 'value', expectedValue: '产品B', tolerance: 0.01 }
+      },
+      hints: [
+        '首先计算金额列：金额=数量×单价',
+        '使用AVERAGE计算缺失值的填充值',
+        '使用COUNT函数计算总订单数',
+        '使用SUM函数计算总销售额',
+        '使用MODE函数查找最畅销产品'
+      ],
+      steps: [
+        '步骤1: 观察数据，发现D5单元格数量缺失',
+        '步骤2: 在D5单元格输入"=ROUND(AVERAGE(D2:D4,D6),0)"，用平均值填充缺失值',
+        '步骤3: 在F2单元格输入"=D2*E2"，计算订单金额',
+        '步骤4: 向下拖动填充柄到F6，计算所有订单金额',
+        '步骤5: 在I2单元格输入"=COUNTA(A2:A6)"，计算总订单数',
+        '步骤6: 在I3单元格输入"=SUM(F2:F6)"，计算总销售额',
+        '步骤7: 在I4单元格输入"=I3/I2"，计算平均订单金额',
+        '步骤8: 在I5单元格输入"=MODE(C2:C6)"，查找最畅销产品',
+        '步骤9: 检查所有计算结果是否正确',
+        '步骤10: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-2': {
+      taskId: 'task-comprehensive-2',
+      skillPoint: '综合应用',
+      level: '中级',
+      title: '季度销售报表制作',
+      description: '整理季度销售数据，使用高级查询功能，制作可视化图表',
+      initialData: {
+        sheetName: '季度销售',
+        cellData: {
+          'A1': { v: '月份' },
+          'B1': { v: '产品' },
+          'C1': { v: '地区' },
+          'D1': { v: '销售额' },
+          'A2': { v: '1' },
+          'B2': { v: '产品A' },
+          'C2': { v: '北京' },
+          'D2': { v: 1000 },
+          'A3': { v: '1' },
+          'B3': { v: '产品B' },
+          'C3': { v: '上海' },
+          'D3': { v: 1500 },
+          'A4': { v: '2' },
+          'B4': { v: '产品A' },
+          'C4': { v: '上海' },
+          'D4': { v: 1200 },
+          'A5': { v: '2' },
+          'B5': { v: '产品B' },
+          'C5': { v: '北京' },
+          'D5': { v: 1800 },
+          'A6': { v: '3' },
+          'B6': { v: '产品A' },
+          'C6': { v: '北京' },
+          'D6': { v: 1100 },
+          'A7': { v: '3' },
+          'B7': { v: '产品B' },
+          'C7': { v: '上海' },
+          'D7': { v: 1600 },
+          'F1': { v: '产品销售查询' },
+          'F2': { v: '选择产品' },
+          'G2': { v: '产品A' },
+          'F3': { v: '总销售额' },
+          'F4': { v: '最高月份' },
+          'F5': { v: '最低月份' }
+        },
+        rowCount: 20,
+        columnCount: 10
+      },
+      targetCells: ['G3:G5', 'A10'],
+      validationRules: {
+        'G3': { type: 'value', expectedValue: 3300, tolerance: 0.01 },
+        'G4': { type: 'value', expectedValue: 2, tolerance: 0.01 },
+        'G5': { type: 'value', expectedValue: 3, tolerance: 0.01 },
+        'A10': { type: 'value', expectedValue: '图表' }
+      },
+      hints: [
+        '使用SUMIFS函数按产品查询总销售额',
+        '使用INDEX-MATCH查找最高和最低销售额对应的月份',
+        '选择产品A的数据制作折线图'
+      ],
+      steps: [
+        '步骤1: 在G3单元格输入"=SUMIFS(D2:D7,B2:B7,G2)"，计算产品A的总销售额',
+        '步骤2: 在G4单元格输入"=INDEX(A2:A7,MATCH(MAX(IF(B2:B7=G2,D2:D7)),D2:D7,0))"',
+        '步骤3: 在G5单元格输入"=INDEX(A2:A7,MATCH(MIN(IF(B2:B7=G2,D2:D7)),D2:D7,0))"',
+        '步骤4: 筛选出产品A的数据（A2:D7中B列=产品A）',
+        '步骤5: 选择筛选后的月份和销售额数据',
+        '步骤6: 插入折线图，展示产品A的月度销售趋势',
+        '步骤7: 调整图表标题和格式',
+        '步骤8: 检查查询结果和图表是否正确',
+        '步骤9: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-3': {
+      taskId: 'task-comprehensive-3',
+      skillPoint: '综合应用',
+      level: '高级',
+      title: '销售数据分析与预测',
+      description: '使用数据透视表分析数据，进行统计推断，并预测下季度销售额',
+      initialData: {
+        sheetName: '销售预测',
+        cellData: {
+          'A1': { v: '季度' },
+          'B1': { v: '产品' },
+          'C1': { v: '地区' },
+          'D1': { v: '销售额' },
+          'A2': { v: 'Q1' },
+          'B2': { v: '产品A' },
+          'C2': { v: '北京' },
+          'D2': { v: 1000 },
+          'A3': { v: 'Q1' },
+          'B3': { v: '产品B' },
+          'C3': { v: '上海' },
+          'D3': { v: 1500 },
+          'A4': { v: 'Q2' },
+          'B4': { v: '产品A' },
+          'C4': { v: '上海' },
+          'D4': { v: 1200 },
+          'A5': { v: 'Q2' },
+          'B5': { v: '产品B' },
+          'C5': { v: '北京' },
+          'D5': { v: 1800 },
+          'A6': { v: 'Q3' },
+          'B6': { v: '产品A' },
+          'C6': { v: '北京' },
+          'D6': { v: 1100 },
+          'A7': { v: 'Q3' },
+          'B7': { v: '产品B' },
+          'C7': { v: '上海' },
+          'D7': { v: 1600 },
+          'F1': { v: '统计分析' },
+          'F2': { v: '季度平均销售额' },
+          'F3': { v: '销售额标准差' },
+          'F4': { v: '产品A与B的相关系数' },
+          'F5': { v: 'Q4预测销售额（产品A）' },
+          'F6': { v: 'Q4预测销售额（产品B）' }
+        },
+        rowCount: 20,
+        columnCount: 10
+      },
+      targetCells: ['G2:G6', 'A10'],
+      validationRules: {
+        'G2': { type: 'value', expectedValue: 1366.67, tolerance: 1 },
+        'G3': { type: 'value', expectedValue: 314.11, tolerance: 1 },
+        'G4': { type: 'value', expectedValue: 0.5, tolerance: 0.1 },
+        'G5': { type: 'value', expectedValue: 1100, tolerance: 50 },
+        'G6': { type: 'value', expectedValue: 1633.33, tolerance: 50 },
+        'A10': { type: 'value', expectedValue: '数据透视表' }
+      },
+      hints: [
+        '首先创建数据透视表，按季度和产品汇总销售额',
+        '使用AVERAGE、STDEV、CORREL等统计函数',
+        '使用移动平均法预测Q4销售额'
+      ],
+      steps: [
+        '步骤1: 选择A1:D7数据，创建数据透视表',
+        '步骤2: 将季度拖到行，产品拖到列，销售额拖到值',
+        '步骤3: 在G2单元格输入"=AVERAGE(D2:D7)"，计算季度平均销售额',
+        '步骤4: 在G3单元格输入"=STDEV(D2:D7)"，计算销售额标准差',
+        '步骤5: 在G4单元格输入"=CORREL(IF(B2:B7=\"产品A\",D2:D7,0),IF(B2:B7=\"产品B\",D2:D7,0))"',
+        '步骤6: 在G5单元格输入"=AVERAGE(1000,1200,1100)"，预测产品A Q4销售额',
+        '步骤7: 在G6单元格输入"=AVERAGE(1500,1800,1600)"，预测产品B Q4销售额',
+        '步骤8: 检查数据透视表和统计分析结果',
+        '步骤9: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-4': {
+      taskId: 'task-comprehensive-4',
+      skillPoint: '综合应用',
+      level: '高级',
+      title: '学生成绩管理系统',
+      description: '使用数组公式计算成绩，设置条件格式，添加数据验证',
+      initialData: {
+        sheetName: '成绩管理',
+        cellData: {
+          'A1': { v: '学号' },
+          'B1': { v: '姓名' },
+          'C1': { v: '语文' },
+          'D1': { v: '数学' },
+          'E1': { v: '英语' },
+          'F1': { v: '总分' },
+          'G1': { v: '平均分' },
+          'H1': { v: '等级' },
+          'A2': { v: 'S001' },
+          'B2': { v: '张三' },
+          'C2': { v: 85 },
+          'D2': { v: 92 },
+          'E2': { v: 78 },
+          'A3': { v: 'S002' },
+          'B3': { v: '李四' },
+          'C3': { v: 90 },
+          'D3': { v: 88 },
+          'E3': { v: 95 },
+          'A4': { v: 'S003' },
+          'B4': { v: '王五' },
+          'C4': { v: 72 },
+          'D4': { v: 65 },
+          'E4': { v: 80 },
+          'A5': { v: 'S004' },
+          'B5': { v: '赵六' },
+          'C5': { v: 95 },
+          'D5': { v: 98 },
+          'E5': { v: 92 },
+          'J1': { v: '成绩查询' },
+          'J2': { v: '选择学号' },
+          'K2': { v: 'S001' }
+        },
+        rowCount: 20,
+        columnCount: 12
+      },
+      targetCells: ['F2:G5', 'H2:H5', 'C2:E5'],
+      validationRules: {
+        'F2': { type: 'value', expectedValue: 255, tolerance: 0.01 },
+        'F3': { type: 'value', expectedValue: 273, tolerance: 0.01 },
+        'F4': { type: 'value', expectedValue: 217, tolerance: 0.01 },
+        'F5': { type: 'value', expectedValue: 285, tolerance: 0.01 },
+        'G2': { type: 'value', expectedValue: 85, tolerance: 0.01 },
+        'G3': { type: 'value', expectedValue: 91, tolerance: 0.01 },
+        'G4': { type: 'value', expectedValue: 72.33, tolerance: 0.01 },
+        'G5': { type: 'value', expectedValue: 95, tolerance: 0.01 },
+        'H2': { type: 'value', expectedValue: '良好' },
+        'H3': { type: 'value', expectedValue: '优秀' },
+        'H4': { type: 'value', expectedValue: '及格' },
+        'H5': { type: 'value', expectedValue: '优秀' }
+      },
+      hints: [
+        '使用数组公式同时计算总分和平均分',
+        '使用IF函数嵌套计算等级：90+优秀，80-89良好，60-79及格，<60不及格',
+        '设置条件格式：平均分<60红色，60-79黄色，80+绿色',
+        '为K2单元格添加数据验证下拉菜单，选择学号'
+      ],
+      steps: [
+        '步骤1: 选择F2:F5单元格区域',
+        '步骤2: 输入数组公式"=C2:C5+D2:D5+E2:E5"，按Ctrl+Shift+Enter确认',
+        '步骤3: 选择G2:G5单元格区域',
+        '步骤4: 输入数组公式"=F2:F5/3"，按Ctrl+Shift+Enter确认',
+        '步骤5: 在H2单元格输入"=IF(G2>=90,\"优秀\",IF(G2>=80,\"良好\",IF(G2>=60,\"及格\",\"不及格\")))"',
+        '步骤6: 向下拖动填充柄到H5单元格',
+        '步骤7: 选择G2:G5单元格，设置条件格式：<60红色填充，60-79黄色填充，80+绿色填充',
+        '步骤8: 选择K2单元格，添加数据验证，来源为A2:A5的学号',
+        '步骤9: 检查所有计算和设置是否正确',
+        '步骤10: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-5': {
+      taskId: 'task-comprehensive-5',
+      skillPoint: '综合应用',
+      level: '高级',
+      title: '客户订单数据分析',
+      description: '清洗客户订单数据，使用高级查询功能，创建数据透视表分析',
+      initialData: {
+        sheetName: '客户订单',
+        cellData: {
+          'A1': { v: '订单号' },
+          'B1': { v: '客户' },
+          'C1': { v: '产品' },
+          'D1': { v: '数量' },
+          'E1': { v: '单价' },
+          'F1': { v: '日期' },
+          'A2': { v: '1001' },
+          'B2': { v: '客户A' },
+          'C2': { v: '产品X' },
+          'D2': { v: 5 },
+          'E2': { v: 100 },
+          'F2': { v: '2023-01-05' },
+          'A3': { v: '1002' },
+          'B3': { v: '客户B' },
+          'C3': { v: '产品Y' },
+          'D3': { v: null },
+          'E3': { v: 200 },
+          'F3': { v: '2023-01-10' },
+          'A4': { v: '1003' },
+          'B4': { v: '客户A' },
+          'C4': { v: '产品Z' },
+          'D4': { v: 3 },
+          'E4': { v: 150 },
+          'F4': { v: '2023-01-15' },
+          'A5': { v: '1004' },
+          'B5': { v: '客户C' },
+          'C5': { v: '产品X' },
+          'D5': { v: 2 },
+          'E5': { v: 100 },
+          'F5': { v: '2023-01-20' },
+          'A6': { v: '1005' },
+          'B6': { v: '客户B' },
+          'C6': { v: '产品Y' },
+          'D6': { v: 4 },
+          'E6': { v: 200 },
+          'F6': { v: '2023-01-25' },
+          'A7': { v: '1006' },
+          'B7': { v: '客户A' },
+          'C7': { v: '产品Y' },
+          'D7': { v: 1 },
+          'E7': { v: 200 },
+          'F7': { v: '2023-02-01' },
+          'H1': { v: '数据查询' },
+          'H2': { v: '选择客户' },
+          'I2': { v: '客户A' },
+          'H3': { v: '总订单数' },
+          'H4': { v: '总金额' },
+          'H5': { v: '最常购买产品' }
+        },
+        rowCount: 20,
+        columnCount: 10
+      },
+      targetCells: ['D3', 'I3:I5', 'A12'],
+      validationRules: {
+        'D3': { type: 'value', expectedValue: 3, tolerance: 0.01 },
+        'I3': { type: 'value', expectedValue: 3, tolerance: 0.01 },
+        'I4': { type: 'value', expectedValue: 1150, tolerance: 0.01 },
+        'I5': { type: 'value', expectedValue: '产品Y', tolerance: 0.01 },
+        'A12': { type: 'value', expectedValue: '数据透视表' }
+      },
+      hints: [
+        '首先清洗D3的缺失值，使用其他订单数量的平均值',
+        '使用COUNTIFS和SUMIFS查询客户数据',
+        '创建数据透视表分析客户购买行为'
+      ],
+      steps: [
+        '步骤1: 观察数据，发现D3单元格数量缺失',
+        '步骤2: 在D3单元格输入"=ROUND(AVERAGE(D2,D4:D7),0)"，用平均值填充缺失值',
+        '步骤3: 在I3单元格输入"=COUNTIFS(B2:B7,I2)"，计算客户A的总订单数',
+        '步骤4: 在I4单元格输入"=SUMIFS(D2:D7*E2:E7,B2:B7,I2)"，计算总金额',
+        '步骤5: 在I5单元格输入"=MODE(IF(B2:B7=I2,C2:C7))"，查找最常购买产品',
+        '步骤6: 创建数据透视表，将客户拖到行，产品拖到列，数量拖到值',
+        '步骤7: 检查数据清洗、查询结果和透视表',
+        '步骤8: 提交任务，验证结果'
+      ]
+    },
+    'task-comprehensive-6': {
+      taskId: 'task-comprehensive-6',
+      skillPoint: '综合应用',
+      level: '高级',
+      title: '年度销售报告与仪表盘',
+      description: '制作销售图表，创建动态仪表盘，完成完整的商业报告',
+      initialData: {
+        sheetName: '年度销售报告',
+        cellData: {
+          'A1': { v: '月份' },
+          'B1': { v: '产品A' },
+          'C1': { v: '产品B' },
+          'D1': { v: '产品C' },
+          'E1': { v: '总销售额' },
+          'A2': { v: '1月' },
+          'B2': { v: 1000 },
+          'C2': { v: 1500 },
+          'D2': { v: 800 },
+          'A3': { v: '2月' },
+          'B3': { v: 1200 },
+          'C3': { v: 1300 },
+          'D3': { v: 900 },
+          'A4': { v: '3月' },
+          'B4': { v: 1100 },
+          'C4': { v: 1600 },
+          'D4': { v: 1000 },
+          'A5': { v: '4月' },
+          'B5': { v: 1300 },
+          'C5': { v: 1400 },
+          'D5': { v: 1100 },
+          'A6': { v: '5月' },
+          'B6': { v: 1400 },
+          'C6': { v: 1700 },
+          'D6': { v: 1200 },
+          'A7': { v: '6月' },
+          'B7': { v: 1500 },
+          'C7': { v: 1800 },
+          'D7': { v: 1300 },
+          'G1': { v: '仪表盘控制' },
+          'G2': { v: '选择产品' },
+          'H2': { v: '产品A' },
+          'G3': { v: '选择月份范围' },
+          'H3': { v: 1 },
+          'I3': { v: 6 },
+          'K1': { v: '关键指标' },
+          'K2': { v: '上半年总销售额' },
+          'K3': { v: '月均销售额' },
+          'K4': { v: '最佳销售月份' },
+          'K5': { v: '增长趋势' }
+        },
+        rowCount: 25,
+        columnCount: 15
+      },
+      targetCells: ['E2:E7', 'L2:L5', 'A10', 'A15'],
+      validationRules: {
+        'E2': { type: 'value', expectedValue: 3300, tolerance: 0.01 },
+        'E3': { type: 'value', expectedValue: 3400, tolerance: 0.01 },
+        'E4': { type: 'value', expectedValue: 3700, tolerance: 0.01 },
+        'E5': { type: 'value', expectedValue: 3800, tolerance: 0.01 },
+        'E6': { type: 'value', expectedValue: 4300, tolerance: 0.01 },
+        'E7': { type: 'value', expectedValue: 4600, tolerance: 0.01 },
+        'L2': { type: 'value', expectedValue: 23100, tolerance: 0.01 },
+        'L3': { type: 'value', expectedValue: 3850, tolerance: 0.01 },
+        'L4': { type: 'value', expectedValue: '6月', tolerance: 0.01 },
+        'L5': { type: 'value', expectedValue: '上升', tolerance: 0.01 },
+        'A10': { type: 'value', expectedValue: '组合图表' },
+        'A15': { type: 'value', expectedValue: '商业报告' }
+      },
+      hints: [
+        '首先计算总销售额列',
+        '使用SUM、AVERAGE、INDEX-MATCH等函数计算关键指标',
+        '创建组合图表：总销售额用柱状图，各产品用折线图',
+        '为H2添加数据验证下拉菜单',
+        '最后整理商业报告格式'
+      ],
+      steps: [
+        '步骤1: 在E2单元格输入"=B2+C2+D2"，计算1月总销售额',
+        '步骤2: 向下拖动填充柄到E7，计算所有月份总销售额',
+        '步骤3: 在L2单元格输入"=SUM(E2:E7)"，计算上半年总销售额',
+        '步骤4: 在L3单元格输入"=L2/6"，计算月均销售额',
+        '步骤5: 在L4单元格输入"=INDEX(A2:A7,MATCH(MAX(E2:E7),E2:E7,0))"',
+        '步骤6: 在L5单元格输入"=IF(E7>E2,\"上升\",\"下降\")"',
+        '步骤7: 选择A1:D7数据，创建组合图表',
+        '步骤8: 为H2单元格添加数据验证，来源为B1:D1',
+        '步骤9: 整理商业报告格式，添加标题、边框、条件格式',
+        '步骤10: 检查所有计算、图表和报告',
+        '步骤11: 提交任务，验证结果'
+      ]
     }
   };
   
   return tasks[id] || tasks['task-1-1'];
 }
 
-function getMockValidationResult(data: { targetCells: Record<string, string> }): ValidationResult {
-  const { targetCells } = data;
+// 数值验证函数
+function validateValue(actual: any, expected: any, tolerance: number = 0.01): { 
+  correct: boolean; 
+  errorType?: string; 
+  errorMessage: string; 
+  suggestion?: string; 
+} {
+  if (actual === null || actual === undefined) {
+    return {
+      correct: false,
+      errorType: 'missing_value',
+      errorMessage: '单元格为空，请输入数值',
+      suggestion: '请在单元格中输入正确的数值或公式'
+    };
+  }
+
+  if (typeof expected === 'number' && typeof actual === 'number') {
+    const diff = Math.abs(actual - expected);
+    if (diff <= tolerance) {
+      return { correct: true, errorMessage: '' };
+    } else {
+      return {
+        correct: false,
+        errorType: 'value_mismatch',
+        errorMessage: `数值不正确。实际值: ${actual}，期望值: ${expected}，差值: ${diff.toFixed(4)}`,
+        suggestion: `请检查您的计算，允许的误差范围是 ±${tolerance}`
+      };
+    }
+  }
+
+  if (typeof expected === 'string' && typeof actual === 'string') {
+    if (actual === expected) {
+      return { correct: true, errorMessage: '' };
+    } else {
+      return {
+        correct: false,
+        errorType: 'text_mismatch',
+        errorMessage: `文本不正确。实际值: "${actual}"，期望值: "${expected}"`,
+        suggestion: '请检查文本拼写和格式'
+      };
+    }
+  }
+
+  if (String(actual) === String(expected)) {
+    return { correct: true, errorMessage: '' };
+  }
+
+  return {
+    correct: false,
+    errorType: 'type_mismatch',
+    errorMessage: `类型不匹配。实际类型: ${typeof actual}，期望类型: ${typeof expected}`,
+    suggestion: '请确保输入的数据类型正确'
+  };
+}
+
+// 公式验证函数
+function validateFormula(formula: string, fingerprints: string[]): { 
+  correct: boolean; 
+  errorType?: string; 
+  errorMessage: string; 
+  suggestion?: string; 
+} {
+  if (!formula) {
+    return {
+      correct: false,
+      errorType: 'missing_formula',
+      errorMessage: '没有检测到公式',
+      suggestion: '请输入公式而不是直接输入数值'
+    };
+  }
+
+  const upperFormula = formula.toUpperCase();
+  const missingFunctions: string[] = [];
+  
+  for (const fingerprint of fingerprints) {
+    if (!upperFormula.includes(fingerprint.toUpperCase())) {
+      missingFunctions.push(fingerprint);
+    }
+  }
+
+  if (missingFunctions.length === 0) {
+    return { correct: true, errorMessage: '' };
+  }
+
+  return {
+    correct: false,
+    errorType: 'formula_mismatch',
+    errorMessage: `公式缺少必要的函数: ${missingFunctions.join(', ')}`,
+    suggestion: `请使用 ${fingerprints.join(' 和 ')} 函数`
+  };
+}
+
+// 格式验证函数
+function validateFormat(format: string, expectedFormat: string): { 
+  correct: boolean; 
+  errorType?: string; 
+  errorMessage: string; 
+  suggestion?: string; 
+} {
+  if (format === expectedFormat) {
+    return { correct: true, errorMessage: '' };
+  }
+
+  const formatNames: Record<string, string> = {
+    'currency': '货币',
+    'percentage': '百分比',
+    'number': '数字',
+    'text': '文本',
+    'date': '日期'
+  };
+
+  return {
+    correct: false,
+    errorType: 'format_mismatch',
+    errorMessage: `格式不正确。当前格式: ${formatNames[format] || format}，期望格式: ${formatNames[expectedFormat] || expectedFormat}`,
+    suggestion: `请将单元格格式设置为 ${formatNames[expectedFormat] || expectedFormat}`
+  };
+}
+
+// 重写的验证函数
+function getMockValidationResult(
+  taskId: string, 
+  data: { 
+    targetCells: Record<string, any>; 
+    cellValues?: Record<string, any>; 
+    formulas?: Record<string, string>;
+  }
+): ValidationResult {
+  const { targetCells, cellValues = {}, formulas = {} } = data;
+  const task = getMockTask(taskId);
   
   let success = true;
-  const results: Array<{ cell: string; correct: boolean; errorMessage: string }> = [];
+  const results: Array<{
+    cell: string;
+    correct: boolean;
+    errorType?: string;
+    errorMessage: string;
+    suggestion?: string;
+    actualValue?: any;
+    expectedValue?: any;
+  }> = [];
   
-  for (const [cell, formula] of Object.entries(targetCells)) {
-    if (formula.includes('SUM') || formula.includes('AVERAGE')) {
-      results.push({ cell, correct: true, errorMessage: '' });
-    } else {
-      results.push({ cell, correct: false, errorMessage: '请使用正确的函数' });
+  for (const [cell, rule] of Object.entries(task.validationRules)) {
+    const actualValue = cellValues[cell] || targetCells[cell];
+    const formula = formulas[cell] || (typeof targetCells[cell] === 'string' ? targetCells[cell] : '');
+    const tolerance = rule.tolerance || 0.01;
+    
+    let validationResult;
+    
+    switch (rule.type) {
+      case 'value':
+        validationResult = validateValue(actualValue, rule.expectedValue, tolerance);
+        break;
+        
+      case 'formula':
+        validationResult = validateFormula(formula, rule.formulaFingerprint || []);
+        break;
+        
+      case 'formula_value':
+        const formulaCheck = validateFormula(formula, rule.formulaFingerprint || []);
+        if (!formulaCheck.correct) {
+          validationResult = formulaCheck;
+        } else {
+          validationResult = validateValue(actualValue, rule.expectedValue, tolerance);
+        }
+        break;
+        
+      case 'format':
+        validationResult = validateFormat(String(actualValue), rule.format || '');
+        break;
+        
+      default:
+        validationResult = validateValue(actualValue, rule.expectedValue, tolerance);
+    }
+    
+    results.push({
+      cell,
+      correct: validationResult.correct,
+      errorType: validationResult.errorType,
+      errorMessage: validationResult.errorMessage,
+      suggestion: validationResult.suggestion,
+      actualValue,
+      expectedValue: rule.expectedValue
+    });
+    
+    if (!validationResult.correct) {
       success = false;
     }
   }
   
+  const correctCount = results.filter(r => r.correct).length;
+  const totalCount = results.length;
+  
   return {
     success,
     results,
-    experience: success ? 200 : 0,
-    message: success ? '任务完成！' : '任务未完成，请检查您的操作',
-    achievementsUnlocked: []
+    experience: success ? 200 : Math.floor((correctCount / totalCount) * 100),
+    message: success 
+      ? `🎉 任务完成！您正确完成了 ${correctCount}/${totalCount} 个验证点。` 
+      : `⚠️ 任务未完成。您正确完成了 ${correctCount}/${totalCount} 个验证点，请检查错误信息并修改。`,
+    achievementsUnlocked: success ? ['perfect-answer'] : []
   };
 }
 
@@ -1197,6 +2499,7 @@ function getMockProgress(_userId: string): UserProgress {
 function getMockAchievements(): Achievement[] {
   return [
     { id: 'first-task', name: '初出茅庐', description: '完成第一个任务', unlocked: true },
+    { id: 'perfect-answer', name: '完美答案', description: '一次性通过所有验证点', unlocked: false },
     { id: 'perfect-streak', name: '完美主义者', description: '一次性通过10个关卡', unlocked: false },
     { id: 'function-master', name: '函数大师', description: '正确使用15种不同函数', unlocked: false },
     { id: 'speed-star', name: '速度之星', description: '10个关卡低于平均用时', unlocked: false }
