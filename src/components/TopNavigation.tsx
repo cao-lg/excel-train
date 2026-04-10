@@ -124,11 +124,19 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     setSelectedSkill(newSelectedSkill);
     setShowTasks(newSelectedSkill !== null);
     
+    console.log('Skill selected:', newSelectedSkill);
+    console.log('Show tasks:', newSelectedSkill !== null);
+    
     if (newSelectedSkill && menuRefs.current[newSelectedSkill]) {
       const rect = menuRefs.current[newSelectedSkill]?.getBoundingClientRect();
       if (rect) {
         setMenuPosition({ top: rect.bottom + 4, left: rect.left });
+        console.log('Menu position:', { top: rect.bottom + 4, left: rect.left });
+      } else {
+        console.log('Rect is null');
       }
+    } else {
+      console.log('Menu ref not found for:', newSelectedSkill);
     }
   };
 
@@ -170,7 +178,8 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
             position: 'fixed',
             top: menuPosition.top,
             left: menuPosition.left,
-            margin: 0
+            margin: 0,
+            zIndex: 99999
           }}
         >
           {taskList
@@ -182,7 +191,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
                 onClick={() => handleTaskSelect(task.id)}
               >
                 <span className="task-title">{task.title}</span>
-                <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : 'advanced'}`}>
+                <span className={`level-tag ${task.level === '初级' ? 'beginner' : task.level === '中级' ? 'intermediate' : task.level === 'advanced'}`}>
                   {task.level}
                 </span>
               </div>
