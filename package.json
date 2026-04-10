@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-
+    "@univerjs/preset-sheets-advanced": "^0.20.0",
     "@univerjs/preset-sheets-conditional-formatting": "^0.20.0",
     "@univerjs/preset-sheets-core": "latest",
     "@univerjs/preset-sheets-data-validation": "^0.20.0",
@@ -23,6 +23,7 @@
     "@univerjs/presets": "latest",
     "@univerjs/sheets-crosshair-highlight": "^0.20.0",
     "@univerjs/sheets-zen-editor": "^0.20.0",
+    "echarts": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

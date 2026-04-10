@@ -17,6 +17,8 @@ import { UniverSheetsSortPreset } from '@univerjs/preset-sheets-sort';
 import SheetsSortZhCN from '@univerjs/preset-sheets-sort/locales/zh-CN';
 import { UniverSheetsThreadCommentPreset } from '@univerjs/preset-sheets-thread-comment';
 import UniverPresetSheetsThreadCommentZhCN from '@univerjs/preset-sheets-thread-comment/locales/zh-CN';
+import { UniverSheetsAdvancedPreset } from '@univerjs/preset-sheets-advanced';
+import sheetsAdvancedZhCN from '@univerjs/preset-sheets-advanced/locales/zh-CN';
 import { createUniver, LocaleType, mergeLocales } from '@univerjs/presets';
 import { UniverSheetsCrosshairHighlightPlugin } from '@univerjs/sheets-crosshair-highlight';
 import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN';
@@ -33,6 +35,7 @@ import '@univerjs/preset-sheets-drawing/lib/index.css';
 import '@univerjs/preset-sheets-hyper-link/lib/index.css';
 import '@univerjs/preset-sheets-find-replace/lib/index.css';
 import '@univerjs/preset-sheets-thread-comment/lib/index.css';
+import '@univerjs/preset-sheets-advanced/lib/index.css';
 import '@univerjs/sheets-zen-editor/lib/index.css';
 import '@univerjs/sheets-crosshair-highlight/lib/index.css';
 
@@ -90,6 +93,7 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
           sheetsDrawingZhCN,
           sheetsHyperLinkZhCN,
           UniverPresetSheetsThreadCommentZhCN,
+          sheetsAdvancedZhCN,
           SheetsCrosshairHighlightZhCN,
           SheetsZenEditorZhCN,
         ),
@@ -106,6 +110,7 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
         UniverSheetsDrawingPreset(),
         UniverSheetsHyperLinkPreset(),
         UniverSheetsThreadCommentPreset(),
+        UniverSheetsAdvancedPreset(),
       ],
       plugins: [
         UniverSheetsCrosshairHighlightPlugin,
