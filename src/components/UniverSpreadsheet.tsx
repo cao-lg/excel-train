@@ -1,14 +1,26 @@
 import React, { useEffect, useRef } from 'react';
-import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
-import sheetsCoreZhCN from '@univerjs/preset-sheets-core/locales/zh-CN';
-import { createUniver, LocaleType, mergeLocales } from '@univerjs/presets';
+import { LocaleType, mergeLocales, Univer, UniverInstanceType } from '@univerjs/core';
+import { FUniver } from '@univerjs/core/facade';
+import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
+import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
+import { UniverUIPlugin } from '@univerjs/ui';
+import { UniverSheetsPlugin } from '@univerjs/sheets';
+import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui';
 import { UniverSheetsCrosshairHighlightPlugin } from '@univerjs/sheets-crosshair-highlight';
-import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN';
 import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
+
+import SheetsZhCN from '@univerjs/sheets/locale/zh-CN';
+import SheetsUIZhCN from '@univerjs/sheets-ui/locale/zh-CN';
+import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN';
 import SheetsZenEditorZhCN from '@univerjs/sheets-zen-editor/locale/zh-CN';
+import UIZhCN from '@univerjs/ui/locale/zh-CN';
+import DesignZhCN from '@univerjs/design/locale/zh-CN';
+
 import type { FUniver } from '@univerjs/core/facade';
 
-import '@univerjs/preset-sheets-core/lib/index.css';
+import '@univerjs/design/lib/index.css';
+import '@univerjs/ui/lib/index.css';
+import '@univerjs/sheets-ui/lib/index.css';
 import '@univerjs/sheets-zen-editor/lib/index.css';
 import '@univerjs/sheets-crosshair-highlight/lib/index.css';
 
@@ -53,30 +65,41 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const { univerAPI } = createUniver({
+    const univer = new Univer({
       locale: LocaleType.ZH_CN,
       locales: {
         [LocaleType.ZH_CN]: mergeLocales(
-          sheetsCoreZhCN,
+          DesignZhCN,
+          UIZhCN,
+          SheetsZhCN,
+          SheetsUIZhCN,
           SheetsCrosshairHighlightZhCN,
           SheetsZenEditorZhCN,
         ),
       },
-      presets: [
-        UniverSheetsCorePreset({
-          container: containerRef.current,
-        }),
-      ],
-      plugins: [
-        UniverSheetsCrosshairHighlightPlugin,
-        UniverSheetsZenEditorPlugin,
-      ],
     });
 
-    univerRef.current = univerAPI;
+    // 注册核心插件
+    univer.registerPlugin(UniverRenderEnginePlugin);
+    univer.registerPlugin(UniverFormulaEnginePlugin);
+    univer.registerPlugin(UniverUIPlugin, {
+      container: containerRef.current,
+    });
+    
+    // 注册Sheets插件
+    univer.registerPlugin(UniverSheetsPlugin);
+    univer.registerPlugin(UniverSheetsUIPlugin);
+    
+    // 注册额外插件
+    univer.registerPlugin(UniverSheetsCrosshairHighlightPlugin);
+    univer.registerPlugin(UniverSheetsZenEditorPlugin);
 
     // 简单创建工作簿
-    univerAPI.createWorkbook({});
+    univer.createUnit(UniverInstanceType.UNIVER_SHEET, {});
+
+    // 创建Facade API实例
+    const univerAPI = FUniver.newAPI(univer);
+    univerRef.current = univerAPI;
 
     return () => {
       if (univerRef.current) {

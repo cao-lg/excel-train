@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@univerjs/core": "^0.20.0",
+    "@univerjs/design": "^0.20.0",
     "@univerjs/drawing": "^0.20.0",
     "@univerjs/engine-formula": "^0.20.0",
+    "@univerjs/engine-render": "^0.20.0",
     "@univerjs/preset-sheets-conditional-formatting": "^0.20.0",
     "@univerjs/preset-sheets-core": "latest",
     "@univerjs/preset-sheets-data-validation": "^0.20.0",
@@ -40,6 +42,7 @@
     "@univerjs/sheets-zen-editor": "^0.20.0",
     "@univerjs/themes": "^0.20.0",
     "@univerjs/thread-comment": "^0.20.0",
+    "@univerjs/ui": "^0.20.0",
     "echarts": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
