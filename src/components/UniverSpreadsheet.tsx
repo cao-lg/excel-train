@@ -1,20 +1,40 @@
 import React, { useEffect, useRef } from 'react';
-import { LocaleType, mergeLocales } from '@univerjs/core';
+import { createUniver, LocaleType, mergeLocales } from '@univerjs/presets';
 import type { FUniver } from '@univerjs/core/facade';
 import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
-import { UniverSheetsSortPreset } from '@univerjs/preset-sheets-sort';
-import { UniverSheetsDrawingPreset } from '@univerjs/preset-sheets-drawing';
-import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting';
-import { createUniver } from '@univerjs/presets';
 import sheetsCoreZhCN from '@univerjs/preset-sheets-core/locales/zh-CN';
-import sheetsSortZhCN from '@univerjs/preset-sheets-sort/locales/zh-CN';
+import { UniverSheetsSortPreset } from '@univerjs/preset-sheets-sort';
+import SheetsSortZhCN from '@univerjs/preset-sheets-sort/locales/zh-CN';
+import { UniverSheetsDrawingPreset } from '@univerjs/preset-sheets-drawing';
 import sheetsDrawingZhCN from '@univerjs/preset-sheets-drawing/locales/zh-CN';
+import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting';
 import sheetsConditionalFormattingZhCN from '@univerjs/preset-sheets-conditional-formatting/locales/zh-CN';
+import { UniverSheetsFilterPreset } from '@univerjs/preset-sheets-filter';
+import UniverPresetSheetsFilterZhCN from '@univerjs/preset-sheets-filter/locales/zh-CN';
+import { UniverSheetsFindReplacePreset } from '@univerjs/preset-sheets-find-replace';
+import UniverPresetSheetsFindReplaceZhCN from '@univerjs/preset-sheets-find-replace/locales/zh-CN';
+import { UniverSheetsHyperLinkPreset } from '@univerjs/preset-sheets-hyper-link';
+import sheetsHyperLinkZhCN from '@univerjs/preset-sheets-hyper-link/locales/zh-CN';
+import { UniverSheetsDataValidationPreset } from '@univerjs/preset-sheets-data-validation';
+import sheetsDataValidationZhCN from '@univerjs/preset-sheets-data-validation/locales/zh-CN';
+import { UniverSheetsThreadCommentPreset } from '@univerjs/preset-sheets-thread-comment';
+import UniverPresetSheetsThreadCommentZhCN from '@univerjs/preset-sheets-thread-comment/locales/zh-CN';
+import { UniverSheetsCrosshairHighlightPlugin } from '@univerjs/sheets-crosshair-highlight';
+import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN';
+import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
+import SheetsZenEditorZhCN from '@univerjs/sheets-zen-editor/locale/zh-CN';
 
 import '@univerjs/preset-sheets-core/lib/index.css';
 import '@univerjs/preset-sheets-sort/lib/index.css';
 import '@univerjs/preset-sheets-drawing/lib/index.css';
 import '@univerjs/preset-sheets-conditional-formatting/lib/index.css';
+import '@univerjs/preset-sheets-filter/lib/index.css';
+import '@univerjs/preset-sheets-find-replace/lib/index.css';
+import '@univerjs/preset-sheets-hyper-link/lib/index.css';
+import '@univerjs/preset-sheets-data-validation/lib/index.css';
+import '@univerjs/preset-sheets-thread-comment/lib/index.css';
+import '@univerjs/sheets-zen-editor/lib/index.css';
+import '@univerjs/sheets-crosshair-highlight/lib/index.css';
 
 interface TaskData {
   taskId: string;
@@ -60,13 +80,39 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
     try {
       console.log('Starting Univer spreadsheet initialization');
       
-      // 简化初始化，先确保核心功能正常
       const { univerAPI } = createUniver({
         locale: LocaleType.ZH_CN,
+        locales: {
+          [LocaleType.ZH_CN]: mergeLocales(
+            sheetsCoreZhCN,
+            SheetsSortZhCN,
+            UniverPresetSheetsFilterZhCN,
+            sheetsConditionalFormattingZhCN,
+            sheetsDataValidationZhCN,
+            UniverPresetSheetsFindReplaceZhCN,
+            sheetsDrawingZhCN,
+            sheetsHyperLinkZhCN,
+            UniverPresetSheetsThreadCommentZhCN,
+            SheetsCrosshairHighlightZhCN,
+            SheetsZenEditorZhCN,
+          ),
+        },
         presets: [
           UniverSheetsCorePreset({
             container: containerRef.current,
           }),
+          UniverSheetsFindReplacePreset(),
+          UniverSheetsSortPreset(),
+          UniverSheetsFilterPreset(),
+          UniverSheetsConditionalFormattingPreset(),
+          UniverSheetsDataValidationPreset(),
+          UniverSheetsDrawingPreset(),
+          UniverSheetsHyperLinkPreset(),
+          UniverSheetsThreadCommentPreset(),
+        ],
+        plugins: [
+          UniverSheetsCrosshairHighlightPlugin,
+          UniverSheetsZenEditorPlugin,
         ],
       });
 
