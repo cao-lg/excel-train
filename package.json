@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@univerjs-pro/sheets-pivot": "^0.20.0",
-    "@univerjs-pro/sheets-pivot-ui": "^0.20.0",
     "@univerjs/preset-sheets-advanced": "^0.20.0",
     "@univerjs/preset-sheets-conditional-formatting": "^0.20.0",
     "@univerjs/preset-sheets-core": "latest",
