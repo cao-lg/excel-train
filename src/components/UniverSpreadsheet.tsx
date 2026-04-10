@@ -65,48 +65,56 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const univer = new Univer({
-      locale: LocaleType.ZH_CN,
-      locales: {
-        [LocaleType.ZH_CN]: mergeLocales(
-          DesignZhCN,
-          UIZhCN,
-          SheetsZhCN,
-          SheetsUIZhCN,
-          SheetsCrosshairHighlightZhCN,
-          SheetsZenEditorZhCN,
-        ),
-      },
-    });
+    try {
+      const univer = new Univer({
+        locale: LocaleType.ZH_CN,
+        locales: {
+          [LocaleType.ZH_CN]: mergeLocales(
+            DesignZhCN,
+            UIZhCN,
+            SheetsZhCN,
+            SheetsUIZhCN,
+            SheetsCrosshairHighlightZhCN,
+            SheetsZenEditorZhCN,
+          ),
+        },
+      });
 
-    // 注册核心插件
-    univer.registerPlugin(UniverRenderEnginePlugin);
-    univer.registerPlugin(UniverFormulaEnginePlugin);
-    univer.registerPlugin(UniverUIPlugin, {
-      container: containerRef.current,
-    });
-    
-    // 注册Sheets插件
-    univer.registerPlugin(UniverSheetsPlugin);
-    univer.registerPlugin(UniverSheetsUIPlugin);
-    
-    // 注册额外插件
-    univer.registerPlugin(UniverSheetsCrosshairHighlightPlugin);
-    univer.registerPlugin(UniverSheetsZenEditorPlugin);
+      // 注册核心插件
+      univer.registerPlugin(UniverRenderEnginePlugin);
+      univer.registerPlugin(UniverFormulaEnginePlugin);
+      univer.registerPlugin(UniverUIPlugin, {
+        container: containerRef.current,
+      });
+      
+      // 注册Sheets插件
+      univer.registerPlugin(UniverSheetsPlugin);
+      univer.registerPlugin(UniverSheetsUIPlugin);
+      
+      // 注册额外插件
+      univer.registerPlugin(UniverSheetsCrosshairHighlightPlugin);
+      univer.registerPlugin(UniverSheetsZenEditorPlugin);
 
-    // 简单创建工作簿
-    univer.createUnit(UniverInstanceType.UNIVER_SHEET, {});
+      // 创建工作簿
+      const workbook = univer.createUnit(UniverInstanceType.UNIVER_SHEET, {
+        sheetName: 'Sheet1',
+      });
 
-    // 创建Facade API实例
-    const univerAPI = FUniver.newAPI(univer);
-    univerRef.current = univerAPI;
+      // 创建Facade API实例
+      const univerAPI = FUniver.newAPI(univer);
+      univerRef.current = univerAPI;
 
-    return () => {
-      if (univerRef.current) {
-        univerRef.current.dispose();
-        univerRef.current = null;
-      }
-    };
+      console.log('Univer spreadsheet initialized successfully');
+
+      return () => {
+        if (univerRef.current) {
+          univerRef.current.dispose();
+          univerRef.current = null;
+        }
+      };
+    } catch (error) {
+      console.error('Error initializing Univer spreadsheet:', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -228,7 +236,7 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
   return (
     <div 
       ref={containerRef} 
-      style={{ height: '600px', width: '100%' }}
+      style={{ height: '600px', width: '100%', border: '1px solid #ccc', backgroundColor: '#fff' }}
     />
   );
 });
