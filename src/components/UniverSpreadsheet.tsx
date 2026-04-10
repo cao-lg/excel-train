@@ -87,6 +87,11 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
       };
     } catch (error) {
       console.error('Error initializing Univer spreadsheet:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'N/A',
+        error: error
+      });
       // 降级处理：显示错误信息
       if (containerRef.current) {
         containerRef.current.innerHTML = `
