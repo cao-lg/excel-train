@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { LocaleType, mergeLocales, Univer, UniverInstanceType } from '@univerjs/core';
-import { FUniver } from '@univerjs/core/facade';
+import type { FUniver } from '@univerjs/core/facade';
 import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
 import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
 import { UniverUIPlugin } from '@univerjs/ui';
@@ -15,8 +15,6 @@ import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/l
 import SheetsZenEditorZhCN from '@univerjs/sheets-zen-editor/locale/zh-CN';
 import UIZhCN from '@univerjs/ui/locale/zh-CN';
 import DesignZhCN from '@univerjs/design/locale/zh-CN';
-
-import type { FUniver } from '@univerjs/core/facade';
 
 import '@univerjs/design/lib/index.css';
 import '@univerjs/ui/lib/index.css';
