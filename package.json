@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@univerjs/preset-sheets-advanced": "^0.20.0",
+
     "@univerjs/preset-sheets-conditional-formatting": "^0.20.0",
     "@univerjs/preset-sheets-core": "latest",
     "@univerjs/preset-sheets-data-validation": "^0.20.0",
