@@ -1,26 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { LocaleType, mergeLocales, Univer, UniverInstanceType } from '@univerjs/core';
+import { LocaleType, mergeLocales } from '@univerjs/core';
 import type { FUniver } from '@univerjs/core/facade';
-import { UniverRenderEnginePlugin } from '@univerjs/engine-render';
-import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula';
-import { UniverUIPlugin } from '@univerjs/ui';
-import { UniverSheetsPlugin } from '@univerjs/sheets';
-import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui';
-import { UniverSheetsCrosshairHighlightPlugin } from '@univerjs/sheets-crosshair-highlight';
-import { UniverSheetsZenEditorPlugin } from '@univerjs/sheets-zen-editor';
+import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
+import { createUniver } from '@univerjs/presets';
+import sheetsCoreZhCN from '@univerjs/preset-sheets-core/locales/zh-CN';
 
-import SheetsZhCN from '@univerjs/sheets/locale/zh-CN';
-import SheetsUIZhCN from '@univerjs/sheets-ui/locale/zh-CN';
-import SheetsCrosshairHighlightZhCN from '@univerjs/sheets-crosshair-highlight/locale/zh-CN';
-import SheetsZenEditorZhCN from '@univerjs/sheets-zen-editor/locale/zh-CN';
-import UIZhCN from '@univerjs/ui/locale/zh-CN';
-import DesignZhCN from '@univerjs/design/locale/zh-CN';
-
-import '@univerjs/design/lib/index.css';
-import '@univerjs/ui/lib/index.css';
-import '@univerjs/sheets-ui/lib/index.css';
-import '@univerjs/sheets-zen-editor/lib/index.css';
-import '@univerjs/sheets-crosshair-highlight/lib/index.css';
+import '@univerjs/preset-sheets-core/lib/index.css';
 
 interface TaskData {
   taskId: string;
@@ -64,45 +49,35 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
     if (!containerRef.current) return;
 
     try {
-      const univer = new Univer({
+      console.log('Starting Univer spreadsheet initialization');
+      
+      const { univerAPI } = createUniver({
         locale: LocaleType.ZH_CN,
         locales: {
           [LocaleType.ZH_CN]: mergeLocales(
-            DesignZhCN,
-            UIZhCN,
-            SheetsZhCN,
-            SheetsUIZhCN,
-            SheetsCrosshairHighlightZhCN,
-            SheetsZenEditorZhCN,
+            sheetsCoreZhCN,
           ),
         },
+        presets: [
+          UniverSheetsCorePreset({
+            container: containerRef.current,
+          }),
+        ],
       });
-
-      // 注册核心插件
-      univer.registerPlugin(UniverRenderEnginePlugin);
-      univer.registerPlugin(UniverFormulaEnginePlugin);
-      univer.registerPlugin(UniverUIPlugin, {
-        container: containerRef.current,
-      });
-      
-      // 注册Sheets插件
-      univer.registerPlugin(UniverSheetsPlugin);
-      univer.registerPlugin(UniverSheetsUIPlugin);
-      
-      // 注册额外插件
-      univer.registerPlugin(UniverSheetsCrosshairHighlightPlugin);
-      univer.registerPlugin(UniverSheetsZenEditorPlugin);
-
-      // 创建工作簿
-      const workbook = univer.createUnit(UniverInstanceType.UNIVER_SHEET, {
-        sheetName: 'Sheet1',
-      });
-
-      // 创建Facade API实例
-      const univerAPI = FUniver.newAPI(univer);
-      univerRef.current = univerAPI;
 
       console.log('Univer spreadsheet initialized successfully');
+      univerRef.current = univerAPI;
+
+      // 创建工作簿和工作表
+      console.log('Creating workbook');
+      const workbook = univerAPI.createWorkbook({})
+      const worksheet = workbook.getActiveSheet()
+      
+      if (worksheet) {
+        // 设置默认的行高和列宽
+        worksheet.setRowHeight(0, 20)
+        worksheet.setColumnWidth(0, 100)
+      }
 
       return () => {
         if (univerRef.current) {
@@ -112,6 +87,17 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
       };
     } catch (error) {
       console.error('Error initializing Univer spreadsheet:', error);
+      // 降级处理：显示错误信息
+      if (containerRef.current) {
+        containerRef.current.innerHTML = `
+          <div style="padding: 20px; text-align: center; color: red;">
+            <h3>表格加载失败</h3>
+            <p>请刷新页面重试</p>
+            <p style="font-size: 12px; margin-top: 10px;">错误信息: ${error instanceof Error ? error.message : String(error)}</p>
+            <p style="font-size: 12px; margin-top: 5px;">堆栈信息: ${error instanceof Error ? error.stack : 'N/A'}</p>
+          </div>
+        `;
+      }
     }
   }, []);
 
