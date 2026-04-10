@@ -2,10 +2,19 @@ import React, { useEffect, useRef } from 'react';
 import { LocaleType, mergeLocales } from '@univerjs/core';
 import type { FUniver } from '@univerjs/core/facade';
 import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
+import { UniverSheetsSortPreset } from '@univerjs/preset-sheets-sort';
+import { UniverSheetsDrawingPreset } from '@univerjs/preset-sheets-drawing';
+import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting';
 import { createUniver } from '@univerjs/presets';
 import sheetsCoreZhCN from '@univerjs/preset-sheets-core/locales/zh-CN';
+import sheetsSortZhCN from '@univerjs/preset-sheets-sort/locales/zh-CN';
+import sheetsDrawingZhCN from '@univerjs/preset-sheets-drawing/locales/zh-CN';
+import sheetsConditionalFormattingZhCN from '@univerjs/preset-sheets-conditional-formatting/locales/zh-CN';
 
 import '@univerjs/preset-sheets-core/lib/index.css';
+import '@univerjs/preset-sheets-sort/lib/index.css';
+import '@univerjs/preset-sheets-drawing/lib/index.css';
+import '@univerjs/preset-sheets-conditional-formatting/lib/index.css';
 
 interface TaskData {
   taskId: string;
@@ -56,12 +65,18 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
         locales: {
           [LocaleType.ZH_CN]: mergeLocales(
             sheetsCoreZhCN,
+            sheetsSortZhCN,
+            sheetsDrawingZhCN,
+            sheetsConditionalFormattingZhCN,
           ),
         },
         presets: [
           UniverSheetsCorePreset({
             container: containerRef.current,
           }),
+          UniverSheetsSortPreset,
+          UniverSheetsDrawingPreset,
+          UniverSheetsConditionalFormattingPreset,
         ],
       });
 
