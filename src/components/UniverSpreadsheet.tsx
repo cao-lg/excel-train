@@ -60,23 +60,13 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
     try {
       console.log('Starting Univer spreadsheet initialization');
       
+      // 简化初始化，先确保核心功能正常
       const { univerAPI } = createUniver({
         locale: LocaleType.ZH_CN,
-        locales: {
-          [LocaleType.ZH_CN]: mergeLocales(
-            sheetsCoreZhCN,
-            sheetsSortZhCN,
-            sheetsDrawingZhCN,
-            sheetsConditionalFormattingZhCN,
-          ),
-        },
         presets: [
           UniverSheetsCorePreset({
             container: containerRef.current,
           }),
-          UniverSheetsSortPreset,
-          UniverSheetsDrawingPreset,
-          UniverSheetsConditionalFormattingPreset,
         ],
       });
 
