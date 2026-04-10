@@ -37,6 +37,11 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     { id: 'task-4-1', title: '逻辑函数应用', skillPoint: '基础运算', level: '初级' },
     { id: 'task-4-2', title: 'AND/OR函数应用', skillPoint: '基础运算', level: '初级' },
     { id: 'task-4-3', title: '文本函数应用', skillPoint: '基础运算', level: '中级' },
+    { id: 'task-4-4', title: '数学函数应用', skillPoint: '基础运算', level: '初级' },
+    { id: 'task-4-5', title: '日期时间函数应用', skillPoint: '基础运算', level: '中级' },
+    { id: 'task-4-6', title: '查找与引用函数应用', skillPoint: '基础运算', level: '中级' },
+    { id: 'task-4-7', title: '统计函数基础', skillPoint: '基础运算', level: '高级' },
+    { id: 'task-4-8', title: '高级数学函数应用', skillPoint: '基础运算', level: '高级' },
     // 高级查询
     { id: 'task-5-1', title: 'VLOOKUP基础应用', skillPoint: '高级查询', level: '中级' },
     { id: 'task-5-2', title: 'INDEX-MATCH函数应用', skillPoint: '高级查询', level: '中级' },
@@ -70,13 +75,20 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     { id: 'task-12-2', title: '基础报告结构', skillPoint: '商业报告', level: '初级' },
     { id: 'task-12-3', title: '对比分析报告', skillPoint: '商业报告', level: '中级' },
     { id: 'task-12-1', title: '商业报告制作', skillPoint: '商业报告', level: '高级' },
+    // 基本预算
+    { id: 'task-budget-1', title: '个人月度预算编制', skillPoint: '基本预算', level: '初级' },
+    { id: 'task-budget-2', title: '家庭年度预算规划', skillPoint: '基本预算', level: '中级' },
+    { id: 'task-budget-3', title: '企业部门预算分析', skillPoint: '基本预算', level: '中级' },
+    { id: 'task-budget-4', title: '预算差异分析与调整', skillPoint: '基本预算', level: '高级' },
+    { id: 'task-budget-5', title: '多维度预算模型构建', skillPoint: '基本预算', level: '高级' },
     // 综合应用
     { id: 'task-comprehensive-1', title: '电商销售数据采集与分析', skillPoint: '综合应用', level: '中级' },
     { id: 'task-comprehensive-2', title: '季度销售报表制作', skillPoint: '综合应用', level: '中级' },
     { id: 'task-comprehensive-3', title: '销售数据分析与预测', skillPoint: '综合应用', level: '高级' },
     { id: 'task-comprehensive-4', title: '学生成绩管理系统', skillPoint: '综合应用', level: '高级' },
     { id: 'task-comprehensive-5', title: '客户订单数据分析', skillPoint: '综合应用', level: '高级' },
-    { id: 'task-comprehensive-6', title: '年度销售报告与仪表盘', skillPoint: '综合应用', level: '高级' }
+    { id: 'task-comprehensive-6', title: '年度销售报告与仪表盘', skillPoint: '综合应用', level: '高级' },
+    { id: 'task-comprehensive-7', title: '数据分析函数与公式应用', skillPoint: '综合应用', level: '中级' }
   ];
 
   // 技能列表
@@ -93,6 +105,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onTaskLoad, userProgress 
     '图表制作',
     '动态仪表盘',
     '商业报告',
+    '基本预算',
     '综合应用'
   ];
 
