@@ -193,8 +193,9 @@ function getMockTask(id: string): TaskData {
       targetCells: ['C3'],
       validationRules: {
         'C3': {
-          type: 'value',
+          type: 'formula_value',
           expectedValue: 1250,
+          formulaFingerprint: ['AVERAGE'],
           tolerance: 0.01
         }
       },
@@ -274,7 +275,7 @@ function getMockTask(id: string): TaskData {
         rowCount: 10,
         columnCount: 3
       },
-      targetCells: ['A3:C3'],
+      targetCells: ['A3'],
       validationRules: {
         'A3': { type: 'value', expectedValue: '2023-01-03' }
       },
