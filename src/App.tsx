@@ -67,8 +67,8 @@ function App() {
         return;
       }
       
-      const userAnswers = spreadsheetRef.current.getTargetCellsValues([]);
-      const userFormulas = spreadsheetRef.current.getTargetCellsFormulas([]);
+      const userAnswers = spreadsheetRef.current.getTargetCellsValues(task.targetCells);
+      const userFormulas = spreadsheetRef.current.getTargetCellsFormulas(task.targetCells);
       
       console.log('用户答案:', userAnswers);
       console.log('用户公式:', userFormulas);
@@ -96,7 +96,7 @@ function App() {
               isCorrect = expected === userValue;
             }
             if (!isCorrect) {
-              errorMessage = `答案错误，预期值为 ${rule.expectedValue}`;
+              errorMessage = `❌ ${cell}: 答案错误，实际值为 ${userValue}，预期值为 ${rule.expectedValue}，请检查计算是否正确`;
             }
             break;
           case 'formula':
@@ -121,9 +121,9 @@ function App() {
             isCorrect = valueCorrect && formulaCorrect;
             
             if (!valueCorrect) {
-              errorMessage = `答案错误，预期值为 ${expectedValue}`;
+              errorMessage = `❌ ${cell}: 答案错误，实际值为 ${userValue}，预期值为 ${expectedValue}，请检查计算是否正确`;
             } else if (!formulaCorrect) {
-              errorMessage = `公式错误，需要使用 ${rule.formulaFingerprint?.join('、')} 函数`;
+              errorMessage = `❌ ${cell}: 公式错误，需要使用 ${rule.formulaFingerprint?.join('、')} 函数，请检查公式是否正确`;
             }
             break;
           case 'format':
