@@ -84,19 +84,36 @@ function App() {
         let isCorrect = false;
         let errorMessage = '';
         
+        console.log(`验证单元格 ${cell}:`);
+        console.log(`  用户值: ${userValue} (类型: ${typeof userValue})`);
+        console.log(`  预期值: ${rule.expectedValue} (类型: ${typeof rule.expectedValue})`);
+        console.log(`  用户公式: ${userFormula}`);
+        
         // 根据不同的验证类型进行验证
         switch (rule.type) {
           case 'value':
             // 验证值是否匹配预期值
             // 处理数值比较，允许一定的精度误差
             const expected = rule.expectedValue;
-            if (typeof expected === 'number' && typeof userValue === 'number') {
+            if (userValue === null || userValue === undefined) {
+              isCorrect = false;
+              errorMessage = `❌ ${cell}: 答案错误，实际值为 undefined，请检查是否填写了该单元格`;
+            } else if (typeof expected === 'number' && typeof userValue === 'number') {
               isCorrect = Math.abs(expected - userValue) < 0.01;
-            } else {
+              if (!isCorrect) {
+                errorMessage = `❌ ${cell}: 答案错误，实际值为 ${userValue}，预期值为 ${rule.expectedValue}，请检查计算是否正确`;
+              }
+            } else if (typeof expected === 'string' && typeof userValue === 'string') {
               isCorrect = expected === userValue;
-            }
-            if (!isCorrect) {
-              errorMessage = `❌ ${cell}: 答案错误，实际值为 ${userValue}，预期值为 ${rule.expectedValue}，请检查计算是否正确`;
+              if (!isCorrect) {
+                errorMessage = `❌ ${cell}: 答案错误，实际值为 "${userValue}"，预期值为 "${rule.expectedValue}"，请检查输入是否正确`;
+              }
+            } else {
+              // 类型不匹配时尝试转换为字符串比较
+              isCorrect = String(expected) === String(userValue);
+              if (!isCorrect) {
+                errorMessage = `❌ ${cell}: 答案错误，实际值为 ${userValue}，预期值为 ${rule.expectedValue}，请检查输入是否正确`;
+              }
             }
             break;
           case 'formula':
@@ -104,10 +121,16 @@ function App() {
             // 验证值是否匹配预期值
             const expectedValue = rule.expectedValue;
             let valueCorrect = false;
-            if (typeof expectedValue === 'number' && typeof userValue === 'number') {
+            if (userValue === null || userValue === undefined) {
+              valueCorrect = false;
+              errorMessage = `❌ ${cell}: 答案错误，实际值为 undefined，请检查是否填写了该单元格`;
+            } else if (typeof expectedValue === 'number' && typeof userValue === 'number') {
               valueCorrect = Math.abs(expectedValue - userValue) < 0.01;
-            } else {
+            } else if (typeof expectedValue === 'string' && typeof userValue === 'string') {
               valueCorrect = expectedValue === userValue;
+            } else {
+              // 类型不匹配时尝试转换为字符串比较
+              valueCorrect = String(expectedValue) === String(userValue);
             }
             
             // 验证公式是否正确（如果有公式指纹要求）
@@ -134,7 +157,7 @@ function App() {
             // 默认检查值是否存在
             isCorrect = userValue !== null && userValue !== undefined && userValue !== '';
             if (!isCorrect) {
-              errorMessage = '请填写该单元格';
+              errorMessage = `❌ ${cell}: 请填写该单元格`;
             }
         }
         

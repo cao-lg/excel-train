@@ -1,0 +1,109 @@
+任务ID,技能点,等级,标题,目标单元格,验证规则,检查结果,备注
+
+task-1-1,数据采集,初级,从CSV导入销售数据,['C5'],C5: formula_value=3700,formulaFingerprint=['SUM'],tolerance=0.01,通过,目标单元格正确
+
+task-2-1,数据清洗,初级,处理缺失值,['C3'],C3: formula_value=1250,formulaFingerprint=['AVERAGE'],tolerance=0.01,通过,目标单元格正确
+
+task-3-1,数据整理,初级,单元格格式设置,['C2:C4'],C2: format=currency,通过,目标范围正确
+
+task-2-2,数据清洗,初级,删除缺失值,['A3'],A3: value='2023-01-03',通过,目标单元格正确
+
+task-2-3,数据清洗,中级,线性插值填充缺失值,['C3'],C3: value=1250,tolerance=0.01,通过,目标单元格正确
+
+task-9-2,预测模型,中级,指数平滑预测,['C2:C7'],C7: value=1520,tolerance=1,通过,目标范围正确
+
+task-9-3,预测模型,高级,季节性波动分析,['C2:C10'],C10: value=0.94,tolerance=0.01,通过,目标范围正确
+
+task-9-4,预测模型,高级,线性回归预测,['C2:C7'],C7: value=1660,tolerance=1,通过,目标范围正确
+
+task-4-2,基础运算,初级,AND/OR函数应用,['D2:D5'],D2: value='优秀',D3: value='一般',D4: value='优秀',D5: value='良好',通过,目标范围正确
+
+task-4-1,基础运算,初级,逻辑函数应用,['C2:C5'],C2: value='优秀',C3: value='一般',C4: value='优秀',C5: value='良好',通过,目标范围正确
+
+task-4-3,基础运算,中级,文本函数应用,['C2:C5', 'D2:D5'],C2: value='ELE',C3: value='ELE',C4: value='FUR',C5: value='FUR',D2: value='001',D3: value='002',D4: value='001',D5: value='002',通过,目标范围正确
+
+task-4-4,基础运算,初级,数学函数应用,['C2:J5'],C2: value=13,tolerance=0.01,D2: value=7,tolerance=0.01,E2: value=30,tolerance=0.01,F2: value=3.3333,tolerance=0.0001,G2: value=1,tolerance=0.01,H3: value=15,tolerance=0.01,I4: value=5,tolerance=0.01,J5: value=8,tolerance=0.01,通过,目标范围正确
+
+task-4-5,基础运算,中级,日期时间函数应用,['B2:H5'],B2: value=2023,tolerance=0.01,C2: value=1,tolerance=0.01,D2: value=15,tolerance=0.01,E2: value=1,tolerance=0.01,F2: value='一月',G2: value=0,tolerance=0.01,H2: value='2023-02-14',B5: value=2024,tolerance=0.01,通过,目标范围正确
+
+task-4-6,基础运算,中级,查找与引用函数应用,['G3:G6'],G3: value='产品B',G4: value=150,tolerance=0.01,G5: value=30,tolerance=0.01,G6: value=4500,tolerance=0.01,通过,目标范围正确
+
+task-4-7,基础运算,高级,统计函数基础,['F2:F7'],F2: value=7000,tolerance=0.01,F3: value=1166.67,tolerance=0.01,F4: value=1500,tolerance=0.01,F5: value=900,tolerance=0.01,F6: value=216.02,tolerance=0.01,F7: value=1350,tolerance=0.01,通过,目标范围正确
+
+task-4-8,基础运算,高级,高级数学函数应用,['B2:H7'],B2: value=0,tolerance=0.01,B3: value=0.7071,tolerance=0.0001,B4: value=1,tolerance=0.01,E5: value=0,tolerance=0.01,E6: value=0.6931,tolerance=0.0001,F5: value=2.7183,tolerance=0.0001,G7: value=100,tolerance=0.01,通过,目标范围正确
+
+task-5-1,高级查询,中级,VLOOKUP基础应用,['F2'],F2: formula_value=200,formulaFingerprint=['VLOOKUP'],tolerance=0.01,通过,目标单元格正确
+
+task-5-2,高级查询,中级,INDEX-MATCH函数应用,['F2'],F2: formula_value=200,formulaFingerprint=['INDEX', 'MATCH'],tolerance=0.01,通过,目标单元格正确
+
+task-5-3,高级查询,高级,VLOOKUP高级应用,['F2:F4'],F2: value='B',F3: value='C',F4: value='A',通过,目标范围正确
+
+task-7-2,数据透视分析,中级,数据透视表高级应用,['A12'],A12: value='数据透视表',通过,目标单元格正确
+
+task-6-1,数组与公式,高级,数组公式基础,['D2:D4', 'D5'],D2: value=1000,tolerance=0.01,D3: value=3000,tolerance=0.01,D4: value=3000,tolerance=0.01,D5: value=7000,tolerance=0.01,通过,目标范围正确
+
+task-7-1,数据透视分析,中级,创建基础数据透视表,['A10'],A10: value='数据透视表',通过,目标单元格正确
+
+task-8-1,统计推断,高级,描述性统计分析,['B9:B13'],B9: value=1333.33,tolerance=0.01,B10: value=1350,tolerance=0.01,B11: value=1600,tolerance=0.01,B12: value=1000,tolerance=0.01,B13: value=216.02,tolerance=0.01,通过,目标范围正确
+
+task-9-1,预测模型,高级,移动平均预测,['C4:C7'],C7: value=1466.67,tolerance=0.01,通过,目标范围正确
+
+task-10-1,图表制作,初级,基础图表制作,['A10'],A10: value='柱状图',通过,目标单元格正确
+
+task-11-1,动态仪表盘,中级,表单控件关联图表,['A10'],A10: value='动态图表',通过,目标单元格正确
+
+task-12-1,商业报告,高级,商业报告制作,['A18'],A18: value='商业报告',通过,目标单元格正确
+
+task-10-2,图表制作,中级,高级图表制作,['A10'],A10: value='组合图表',通过,目标单元格正确
+
+task-1-2,数据采集,中级,API数据抓取与处理,['C5'],C5: value=6627,通过,目标单元格正确
+
+task-1-3,数据采集,高级,多源数据融合,['E2:E4', 'F2:F4'],E2: value='产品A',E3: value='产品B',E4: value='产品C',F2: value=100,F3: value=145,F4: value=200,通过,目标范围正确
+
+task-3-2,数据整理,中级,数据转置与重组,['G1:J9'],G2: value='产品A',H2: value='Q1',I2: value=1000,G5: value='产品B',H5: value='Q1',I5: value=800,通过,目标范围正确
+
+task-3-3,数据整理,高级,高级数据分组与汇总,['F1:H5'],F2: value='华东',F3: value='华北',G2: value=2500,G3: value=3000,通过,目标范围正确
+
+task-6-2,数组与公式,初级,数组入门：批量计算,['D2:D4'],D2: value=500,D3: value=600,D4: value=300,通过,目标范围正确
+
+task-6-3,数组与公式,中级,数组求和与条件计算,['E2'],E2: value=1000,通过,目标单元格正确
+
+task-7-3,数据透视分析,高级,数据透视表计算字段与分组,['F1:J10'],G2: value=22,通过,目标范围正确
+
+task-8-2,统计推断,初级,基础统计量计算,['E1:E3'],E1: value=5,E2: value=438,E3: value=87.6,通过,目标范围正确
+
+task-8-3,统计推断,中级,相关性分析,['E1'],E1: value=0.98,通过,目标单元格正确
+
+task-10-3,图表制作,高级,热力图与双坐标轴图表,['A10'],A10: value='热力图',通过,目标单元格正确
+
+task-11-2,动态仪表盘,初级,数据验证下拉菜单,['C2'],C2: value='产品A',通过,目标单元格正确
+
+task-11-3,动态仪表盘,高级,交互式KPI仪表盘,['I1:I3'],I1: value=1500,I2: value=1300,I3: value=1.15,通过,目标范围正确
+
+task-12-2,商业报告,初级,基础报告结构,['C8'],C8: value=3700,通过,目标单元格正确
+
+task-12-3,商业报告,中级,对比分析报告,['C5:C7', 'D4'],C5: value=0.17,C6: value=-0.09,C7: value=0.25,D4: value=0.2,通过,目标范围正确
+
+task-comprehensive-1,综合应用,中级,电商销售数据采集与分析,['F2:F6', 'I2:I5'],F2: value=200,tolerance=0.01,F3: value=450,tolerance=0.01,F4: value=100,tolerance=0.01,F5: value=200,tolerance=0.01,F6: value=750,tolerance=0.01,I2: value=5,tolerance=0.01,I3: value=1700,tolerance=0.01,I4: value=340,tolerance=0.01,I5: value='产品B',tolerance=0.01,通过,目标范围正确
+
+task-comprehensive-2,综合应用,中级,季度销售报表制作,['G3:G5', 'A10'],G3: value=3300,tolerance=0.01,G4: value=2,tolerance=0.01,G5: value=3,tolerance=0.01,A10: value='图表',通过,目标范围正确
+
+task-comprehensive-3,综合应用,高级,销售数据分析与预测,['G2:G6', 'A10'],G2: value=1366.67,tolerance=1,G3: value=314.11,tolerance=1,G4: value=0.5,tolerance=0.1,G5: value=1100,tolerance=50,G6: value=1633.33,tolerance=50,A10: value='数据透视表',通过,目标范围正确
+
+task-comprehensive-4,综合应用,高级,学生成绩管理系统,['F2:G5', 'H2:H5', 'C2:E5'],F2: value=255,tolerance=0.01,F3: value=273,tolerance=0.01,F4: value=217,tolerance=0.01,F5: value=285,tolerance=0.01,G2: value=85,tolerance=0.01,G3: value=91,tolerance=0.01,G4: value=72.33,tolerance=0.01,G5: value=95,tolerance=0.01,H2: value='良好',H3: value='优秀',H4: value='及格',H5: value='优秀',通过,目标范围正确
+
+task-comprehensive-5,综合应用,高级,客户订单数据分析,['D3', 'I3:I5', 'A12'],D3: value=3,tolerance=0.01,I3: value=3,tolerance=0.01,I4: value=1150,tolerance=0.01,I5: value='产品Y',tolerance=0.01,A12: value='数据透视表',通过,目标范围正确
+
+task-comprehensive-6,综合应用,高级,年度销售报告与仪表盘,['E2:E7', 'L2:L5', 'A10', 'A15'],E2: value=3300,tolerance=0.01,E3: value=3400,tolerance=0.01,E4: value=3700,tolerance=0.01,E5: value=3800,tolerance=0.01,E6: value=4300,tolerance=0.01,E7: value=4600,tolerance=0.01,L2: value=23100,tolerance=0.01,L3: value=3850,tolerance=0.01,L4: value='6月',tolerance=0.01,L5: value='上升',tolerance=0.01,A10: value='组合图表',A15: value='商业报告',通过,目标范围正确
+
+task-comprehensive-7,综合应用,中级,数据分析函数与公式应用,['G2:G6', 'J3:J9', 'J12:J14'],G2: value=10000,tolerance=0.01,G3: value=13000,tolerance=0.01,G4: value=9000,tolerance=0.01,G5: value=16000,tolerance=0.01,G6: value=11500,tolerance=0.01,J3: value=11900,tolerance=0.01,J4: value=11500,tolerance=0.01,J5: value=2618.6,tolerance=1,J7: value=9500,tolerance=0.01,J8: value=14500,tolerance=0.01,J9: value=11500,tolerance=0.01,J12: value='张三',tolerance=0.01,J13: value='销售部',tolerance=0.01,J14: value=4,tolerance=0.1,通过,目标范围正确
+
+task-budget-1,基本预算,初级,个人月度预算编制,['B6', 'B13', 'B14', 'C6', 'C13', 'C14', 'D3:D14'],B6: value=9500,tolerance=0.01,B13: value=7000,tolerance=0.01,B14: value=2500,tolerance=0.01,C6: value=9400,tolerance=0.01,C13: value=7100,tolerance=0.01,C14: value=2300,tolerance=0.01,D6: value=-100,tolerance=0.01,D14: value=-200,tolerance=0.01,通过,目标范围正确
+
+task-budget-2,基本预算,中级,家庭年度预算规划,['B6', 'B15', 'B16', 'O6', 'O15', 'O16'],B6: value=120000,tolerance=0.01,B15: value=90000,tolerance=0.01,B16: value=30000,tolerance=0.01,O6: value=118000,tolerance=0.01,O15: value=88000,tolerance=0.01,O16: value=30000,tolerance=0.01,通过,目标范围正确
+
+task-budget-3,基本预算,高级,部门预算编制,['B6', 'B15', 'B16', 'E6', 'E15', 'E16'],B6: value=500000,tolerance=0.01,B15: value=420000,tolerance=0.01,B16: value=80000,tolerance=0.01,E6: value=490000,tolerance=0.01,E15: value=410000,tolerance=0.01,E16: value=80000,tolerance=0.01,通过,目标范围正确
+
+task-budget-4,基本预算,高级,预算差异分析,['D3:D16', 'E3:E16'],D6: value=-10000,tolerance=0.01,D15: value=-10000,tolerance=0.01,D16: value=0,tolerance=0.01,E6: value=-2%,tolerance=0.01,E15: value=-2.38%,tolerance=0.01,E16: value=0%,tolerance=0.01,通过,目标范围正确
+
+task-budget-5,基本预算,高级,多维度预算模型,['B6', 'B15', 'B16', 'E6', 'E15', 'E16', 'H6', 'H15', 'H16'],B6: value=1000000,tolerance=0.01,B15: value=850000,tolerance=0.01,B16: value=150000,tolerance=0.01,E6: value=1050000,tolerance=0.01,E15: value=880000,tolerance=0.01,E16: value=170000,tolerance=0.01,H6: value=1100000,tolerance=0.01,H15: value=900000,tolerance=0.01,H16: value=200000,tolerance=0.01,通过,目标范围正确

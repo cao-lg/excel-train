@@ -505,10 +505,10 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['D2:D5'],
       validationRules: {
-        'D2': { type: 'value', expectedValue: '优秀' },
-        'D3': { type: 'value', expectedValue: '一般' },
-        'D4': { type: 'value', expectedValue: '优秀' },
-        'D5': { type: 'value', expectedValue: '良好' }
+        'D2': { type: 'formula_value', expectedValue: '优秀', formulaFingerprint: ['IF', 'AND', 'OR'] },
+        'D3': { type: 'formula_value', expectedValue: '一般', formulaFingerprint: ['IF', 'AND', 'OR'] },
+        'D4': { type: 'formula_value', expectedValue: '优秀', formulaFingerprint: ['IF', 'AND', 'OR'] },
+        'D5': { type: 'formula_value', expectedValue: '良好', formulaFingerprint: ['IF', 'AND', 'OR'] }
       },
       hints: ['使用AND函数检查多个条件同时满足', '使用OR函数检查至少一个条件满足'],
       steps: [
@@ -545,10 +545,10 @@ function getMockTask(id: string): TaskData {
       },
       targetCells: ['C2:C5'],
       validationRules: {
-        'C2': { type: 'value', expectedValue: '优秀' },
-        'C3': { type: 'value', expectedValue: '一般' },
-        'C4': { type: 'value', expectedValue: '优秀' },
-        'C5': { type: 'value', expectedValue: '良好' }
+        'C2': { type: 'formula_value', expectedValue: '优秀', formulaFingerprint: ['IF'] },
+        'C3': { type: 'formula_value', expectedValue: '一般', formulaFingerprint: ['IF'] },
+        'C4': { type: 'formula_value', expectedValue: '优秀', formulaFingerprint: ['IF'] },
+        'C5': { type: 'formula_value', expectedValue: '良好', formulaFingerprint: ['IF'] }
       },
       hints: ['使用IF函数进行条件判断', '销售额>=1200为优秀，>=1000为良好，否则为一般'],
       steps: [

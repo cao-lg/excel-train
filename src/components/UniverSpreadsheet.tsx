@@ -218,16 +218,93 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
       const worksheet = workbook.getActiveSheet();
       if (!worksheet) return result;
       
+      // 辅助函数：解析A1格式的单元格地址
+      const parseCellAddress = (address: string) => {
+        const match = address.match(/^([A-Z]+)([0-9]+)$/i);
+        if (!match) return null;
+        return { col: match[1], row: parseInt(match[2]) };
+      };
+      
+      // 辅助函数：解析A1格式的范围
+      const parseRange = (rangeStr: string) => {
+        const [start, end] = rangeStr.split(':');
+        const startAddr = parseCellAddress(start);
+        const endAddr = parseCellAddress(end);
+        return { start: startAddr, end: endAddr };
+      };
+      
+      // 辅助函数：将列字母转换为数字
+      const colToNum = (col: string) => {
+        let num = 0;
+        for (let i = 0; i < col.length; i++) {
+          num = num * 26 + col.toUpperCase().charCodeAt(i) - 64;
+        }
+        return num;
+      };
+      
+      // 辅助函数：将数字转换为列字母
+      const numToCol = (num: number) => {
+        let col = '';
+        while (num > 0) {
+          num--;
+          col = String.fromCharCode(65 + (num % 26)) + col;
+          num = Math.floor(num / 26);
+        }
+        return col;
+      };
+      
       cells.forEach(cell => {
         try {
-          const range = worksheet.getRange(cell);
-          result[cell] = range.getValue();
+          // 检查是否是范围（包含冒号）
+          if (cell.includes(':')) {
+            // 对于范围，逐个获取单元格
+            const parsed = parseRange(cell);
+            if (!parsed || !parsed.start || !parsed.end) {
+              console.error(`无法解析范围: ${cell}`);
+              return;
+            }
+            
+            const startCol = colToNum(parsed.start.col);
+            const endCol = colToNum(parsed.end.col);
+            const startRow = parsed.start.row;
+            const endRow = parsed.end.row;
+            
+            console.log(`解析范围 ${cell}: 列 ${startCol}-${endCol}, 行 ${startRow}-${endRow}`);
+            
+            // 逐个获取每个单元格
+            for (let row = startRow; row <= endRow; row++) {
+              for (let col = startCol; col <= endCol; col++) {
+                const cellAddress = `${numToCol(col)}${row}`;
+                try {
+                  const range = worksheet.getRange(cellAddress);
+                  const value = range.getValue();
+                  result[cellAddress] = value !== undefined && value !== null ? value : '';
+                  console.log(`  单元格 ${cellAddress} 的值: ${result[cellAddress]} (类型: ${typeof result[cellAddress]})`);
+                } catch (cellError) {
+                  console.error(`获取单元格 ${cellAddress} 值时出错:`, cellError);
+                  result[cellAddress] = '';
+                }
+              }
+            }
+          } else {
+            // 对于单个单元格，直接获取
+            try {
+              const range = worksheet.getRange(cell);
+              const value = range.getValue();
+              result[cell] = value !== undefined && value !== null ? value : '';
+              console.log(`获取单元格 ${cell} 的值: ${result[cell]} (类型: ${typeof result[cell]})`);
+            } catch (singleCellError) {
+              console.error(`获取单个单元格 ${cell} 值时出错:`, singleCellError);
+              result[cell] = '';
+            }
+          }
         } catch (error) {
-          console.error(`获取单元格${cell}值时出错:`, error);
-          result[cell] = null;
+          console.error(`处理单元格 ${cell} 时出错:`, error);
+          result[cell] = '';
         }
       });
       
+      console.log('最终获取的所有值:', result);
       return result;
     },
     getCellFormula: (cell: string) => {
@@ -259,16 +336,92 @@ const UniverSpreadsheet = React.forwardRef<UniverSpreadsheetRef, UniverSpreadshe
       const worksheet = workbook.getActiveSheet();
       if (!worksheet) return result;
       
+      // 辅助函数：解析A1格式的单元格地址
+      const parseCellAddress = (address: string) => {
+        const match = address.match(/^([A-Z]+)([0-9]+)$/i);
+        if (!match) return null;
+        return { col: match[1], row: parseInt(match[2]) };
+      };
+      
+      // 辅助函数：解析A1格式的范围
+      const parseRange = (rangeStr: string) => {
+        const [start, end] = rangeStr.split(':');
+        const startAddr = parseCellAddress(start);
+        const endAddr = parseCellAddress(end);
+        return { start: startAddr, end: endAddr };
+      };
+      
+      // 辅助函数：将列字母转换为数字
+      const colToNum = (col: string) => {
+        let num = 0;
+        for (let i = 0; i < col.length; i++) {
+          num = num * 26 + col.toUpperCase().charCodeAt(i) - 64;
+        }
+        return num;
+      };
+      
+      // 辅助函数：将数字转换为列字母
+      const numToCol = (num: number) => {
+        let col = '';
+        while (num > 0) {
+          num--;
+          col = String.fromCharCode(65 + (num % 26)) + col;
+          num = Math.floor(num / 26);
+        }
+        return col;
+      };
+      
       cells.forEach(cell => {
         try {
-          const range = worksheet.getRange(cell);
-          result[cell] = range.getFormula() || '';
+          // 检查是否是范围（包含冒号）
+          if (cell.includes(':')) {
+            // 对于范围，逐个获取单元格公式
+            const parsed = parseRange(cell);
+            if (!parsed || !parsed.start || !parsed.end) {
+              console.error(`无法解析范围: ${cell}`);
+              return;
+            }
+            
+            const startCol = colToNum(parsed.start.col);
+            const endCol = colToNum(parsed.end.col);
+            const startRow = parsed.start.row;
+            const endRow = parsed.end.row;
+            
+            console.log(`解析范围 ${cell}: 列 ${startCol}-${endCol}, 行 ${startRow}-${endRow}`);
+            
+            // 逐个获取每个单元格的公式
+            for (let row = startRow; row <= endRow; row++) {
+              for (let col = startCol; col <= endCol; col++) {
+                const cellAddress = `${numToCol(col)}${row}`;
+                try {
+                  const range = worksheet.getRange(cellAddress);
+                  const formula = range.getFormula() || '';
+                  result[cellAddress] = formula;
+                  console.log(`  单元格 ${cellAddress} 的公式: ${result[cellAddress]}`);
+                } catch (cellError) {
+                  console.error(`获取单元格 ${cellAddress} 公式时出错:`, cellError);
+                  result[cellAddress] = '';
+                }
+              }
+            }
+          } else {
+            // 对于单个单元格，直接获取公式
+            try {
+              const range = worksheet.getRange(cell);
+              result[cell] = range.getFormula() || '';
+              console.log(`获取单元格 ${cell} 的公式: ${result[cell]}`);
+            } catch (singleCellError) {
+              console.error(`获取单个单元格 ${cell} 公式时出错:`, singleCellError);
+              result[cell] = '';
+            }
+          }
         } catch (error) {
-          console.error(`获取单元格${cell}公式时出错:`, error);
+          console.error(`处理单元格 ${cell} 时出错:`, error);
           result[cell] = '';
         }
       });
       
+      console.log('最终获取的所有公式:', result);
       return result;
     }
   }));
